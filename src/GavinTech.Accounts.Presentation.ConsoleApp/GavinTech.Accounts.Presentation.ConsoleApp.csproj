@@ -2,13 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GavinTech.Accounts.Application\GavinTech.Accounts.Application.csproj" />
+    <ProjectReference Include="..\GavinTech.Accounts.Infrastructure\GavinTech.Accounts.Infrastructure.csproj" />
   </ItemGroup>
-
 </Project>

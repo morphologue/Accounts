@@ -18,12 +18,12 @@ namespace GavinTech.Accounts.Domain.Primitives
         public Amount(int centCount) => CentCount = centCount;
 
         // Equality
-        public override bool Equals(object other) => CentCount.Equals(ExtractCentCount(other));
+        public override bool Equals(object? other) => CentCount.Equals(ExtractCentCount(other));
         public override int GetHashCode() => CentCount.GetHashCode();
         public bool Equals(Amount otherAmount) => CentCount.Equals(otherAmount);
 
         // Comparison
-        public int CompareTo(object other) => CentCount.CompareTo(ExtractCentCount(other));
+        public int CompareTo(object? other) => CentCount.CompareTo(ExtractCentCount(other));
         public int CompareTo(Amount otherAmount) => CentCount.CompareTo(otherAmount.CentCount);
 
         // Other object overrides
@@ -32,6 +32,6 @@ namespace GavinTech.Accounts.Domain.Primitives
         // Instance methods
         public decimal ToDecimal() => CentCount / 100m;
 
-        private int? ExtractCentCount(object other) => (other as Amount?)?.CentCount;
+        private int? ExtractCentCount(object? other) => (other as Amount?)?.CentCount;
     }
 }

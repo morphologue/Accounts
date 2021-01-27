@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Persistence\" />
+    <Folder Include="DependencyInjection\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GavinTech.Accounts.Application\GavinTech.Accounts.Application.csproj" />
+  </ItemGroup>
+</Project>

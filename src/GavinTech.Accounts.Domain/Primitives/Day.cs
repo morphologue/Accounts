@@ -21,12 +21,12 @@ namespace GavinTech.Accounts.Domain.Primitives
         public Day(DateTime dateTime) => Offset = (dateTime - Epoch).Days;
 
         // Equality
-        public override bool Equals(object other) => Offset.Equals(ExtractOffset(other));
+        public override bool Equals(object? other) => Offset.Equals(ExtractOffset(other));
         public override int GetHashCode() => Offset.GetHashCode();
         public bool Equals(Day otherDay) => Offset.Equals(otherDay);
 
         // Comparison
-        public int CompareTo(object other) => Offset.CompareTo(ExtractOffset(other));
+        public int CompareTo(object? other) => Offset.CompareTo(ExtractOffset(other));
         public int CompareTo(Day otherDay) => Offset.CompareTo(otherDay.Offset);
 
         // Other object overrides
@@ -35,6 +35,6 @@ namespace GavinTech.Accounts.Domain.Primitives
         // Instance methods
         public DateTime ToDateTime() => Epoch.AddDays(Offset);
 
-        private int? ExtractOffset(object other) => (other as Day?)?.Offset;
+        private int? ExtractOffset(object? other) => (other as Day?)?.Offset;
     }
 }
