@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace GavinTech.Accounts.Migrations
+namespace GavinTech.Accounts.Migrations.Sqlite
 {
     [DbContext(typeof(AccountsDbContext))]
     partial class AccountsDbContextModelSnapshot : ModelSnapshot

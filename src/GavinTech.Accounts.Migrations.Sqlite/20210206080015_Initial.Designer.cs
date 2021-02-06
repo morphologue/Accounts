@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace GavinTech.Accounts.Migrations
+namespace GavinTech.Accounts.Migrations.Sqlite
 {
     [DbContext(typeof(AccountsDbContext))]
     [Migration("20210206080015_Initial")]

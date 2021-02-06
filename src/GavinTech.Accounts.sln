@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GavinTech.Accounts.Infrastr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GavinTech.Accounts.UnitTests", "GavinTech.Accounts.UnitTests\GavinTech.Accounts.UnitTests.csproj", "{3DC006B9-034C-4C72-A3E5-9CCFED827DC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GavinTech.Accounts.Migrations", "GavinTech.Accounts.Migrations\GavinTech.Accounts.Migrations.csproj", "{8AF580B4-65B1-40EA-A635-0775BC0D1416}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GavinTech.Accounts.Migrations.Sqlite", "GavinTech.Accounts.Migrations.Sqlite\GavinTech.Accounts.Migrations.Sqlite.csproj", "{8AF580B4-65B1-40EA-A635-0775BC0D1416}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

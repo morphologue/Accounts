@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace GavinTech.Accounts.Migrations
+namespace GavinTech.Accounts.Migrations.Sqlite
 {
     public partial class Initial : Migration
     {

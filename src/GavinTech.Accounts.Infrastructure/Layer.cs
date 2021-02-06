@@ -14,7 +14,7 @@ namespace GavinTech.Accounts.Infrastructure
             base.RegisterDependencies(services, args);
             services.AddDbContext<AccountsDbContext>(dbContextOptions =>
                 dbContextOptions.UseSqlite("Data Source=accounts.db", sqliteOptions =>
-                    sqliteOptions.MigrationsAssembly("GavinTech.Accounts.Migrations")));
+                    sqliteOptions.MigrationsAssembly("GavinTech.Accounts.Migrations.Sqlite")));
         }
 
         public override Task InitialiseAsync(IServiceProvider scopedProvider)
