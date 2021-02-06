@@ -8,19 +8,19 @@ namespace GavinTech.Accounts.Presentation.ConsoleApp
     {
         private static async Task Main(string[] args)
         {
-            var provider = WireUpLayers(args);
+            var provider = await InitialiseLayersAsync(args);
             await provider.GetRequiredService<IRepl>().ExecuteAsync();
         }
 
-        private static IServiceProvider WireUpLayers(string[] args)
+        private static async Task<IServiceProvider> InitialiseLayersAsync(string[] args)
         {
             Application.DependencyInjection.ILayer[] layers =
             {
                 // Later service registrations override earlier ones, so the
                 // below ordering means that higher layers take precedence.
-                new Application.DependencyInjection.Layer(),
-                new Infrastructure.DependencyInjection.Layer(),
-                new Presentation.ConsoleApp.DependencyInjection.Layer()
+                new Application.Layer(),
+                new Infrastructure.Layer(),
+                new Presentation.ConsoleApp.Layer()
             };
 
             var services = new ServiceCollection();
@@ -28,7 +28,15 @@ namespace GavinTech.Accounts.Presentation.ConsoleApp
             {
                 layer.RegisterDependencies(services, args);
             }
-            return services.BuildServiceProvider();
+            var built = services.BuildServiceProvider();
+
+            using var scope = built.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            foreach (var layer in layers)
+            {
+                await layer.InitialiseAsync(scope.ServiceProvider);
+            }
+
+            return built;
         }
     }
 }

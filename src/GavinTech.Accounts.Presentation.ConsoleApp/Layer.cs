@@ -1,7 +1,7 @@
 ﻿using GavinTech.Accounts.Application.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GavinTech.Accounts.Infrastructure.DependencyInjection
+namespace GavinTech.Accounts.Presentation.ConsoleApp
 {
     public class Layer : ScanningLayerBase
     {

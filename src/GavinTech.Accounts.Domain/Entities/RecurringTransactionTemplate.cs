@@ -14,6 +14,6 @@ namespace GavinTech.Accounts.Domain.Entities
         public RecurrenceBasis Basis { get; set; }
         public uint Multiplicand { get; set; }
         public Day? UntilExcl { get; set; }
-        public ICollection<Day> Tombstones { get; set; } = new HashSet<Day>();
+        public HashSet<Day> Tombstones { get; set; } = new HashSet<Day>();
     }
 }

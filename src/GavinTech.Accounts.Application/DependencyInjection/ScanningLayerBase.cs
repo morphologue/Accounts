@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GavinTech.Accounts.Application.DependencyInjection
@@ -15,5 +17,7 @@ namespace GavinTech.Accounts.Application.DependencyInjection
                 .AddClasses(classes => classes.WithAttribute<ScopedServiceAttribute>())
                     .AsImplementedInterfaces().WithScopedLifetime());
         }
+
+        public virtual Task InitialiseAsync(IServiceProvider scopedProvider) => Task.CompletedTask;
     }
 }

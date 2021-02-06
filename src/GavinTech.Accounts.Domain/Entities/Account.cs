@@ -1,4 +1,6 @@
-﻿namespace GavinTech.Accounts.Domain.Entities
+﻿using GavinTech.Accounts.Domain.Primitives;
+
+namespace GavinTech.Accounts.Domain.Entities
 {
     public class Account : EntityBase
     {
@@ -6,5 +8,6 @@
 
         public Account? Parent { get; set; }
         public string Name { get; set; } = string.Empty;
+        public Day? ClosedAfter { get; set; }
     }
 }

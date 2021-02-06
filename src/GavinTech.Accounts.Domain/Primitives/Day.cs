@@ -35,6 +35,6 @@ namespace GavinTech.Accounts.Domain.Primitives
         // Instance methods
         public DateTime ToDateTime() => Epoch.AddDays(Offset);
 
-        private int? ExtractOffset(object? other) => (other as Day?)?.Offset;
+        private static int? ExtractOffset(object? other) => (other as Day?)?.Offset;
     }
 }

@@ -27,11 +27,15 @@ namespace GavinTech.Accounts.Domain.Primitives
         public int CompareTo(Amount otherAmount) => CentCount.CompareTo(otherAmount.CentCount);
 
         // Other object overrides
-        public override string ToString() => $"{CentCount / 100}.{CentCount % 100 :00}";
+        public override string ToString()
+        {
+            var abs = Math.Abs(CentCount);
+            return $"{(CentCount < 0 ? "-" : string.Empty)}{abs / 100}.{abs % 100:00}";
+        }
 
         // Instance methods
         public decimal ToDecimal() => CentCount / 100m;
 
-        private int? ExtractCentCount(object? other) => (other as Amount?)?.CentCount;
+        private static int? ExtractCentCount(object? other) => (other as Amount?)?.CentCount;
     }
 }
