@@ -11,9 +11,7 @@ namespace GavinTech.Accounts.Infrastructure.Persistence
         public DbSet<TransactionTemplate> TransactionTemplates { get; set; }
         public DbSet<RecurringTransactionTemplate> RecurringTransactionTemplates { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
+        protected override void OnModelCreating(ModelBuilder builder) =>
             builder.ApplyConfigurationsFromAssembly(typeof(AccountsDbContext).Assembly);
-        }
     }
 }

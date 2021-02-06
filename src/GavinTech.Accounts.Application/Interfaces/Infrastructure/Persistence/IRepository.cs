@@ -7,7 +7,6 @@ namespace GavinTech.Accounts.Application.Interfaces.Infrastructure.Persistence
     {
         IAsyncEnumerable<TEntity> GetAll();
         void Add(TEntity entity);
-        void Update(TEntity entity);
         void Delete(TEntity entity);
     }
 }

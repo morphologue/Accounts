@@ -8,6 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GavinTech.Accounts.Infrastructure\GavinTech.Accounts.Infrastructure.csproj" />
-    <ProjectReference Include="..\GavinTech.Accounts.Migrations\GavinTech.Accounts.Migrations.csproj" />
+    <ProjectReference Include="..\GavinTech.Accounts.Migrations.Sqlite\GavinTech.Accounts.Migrations.Sqlite.csproj" />
   </ItemGroup>
 </Project>

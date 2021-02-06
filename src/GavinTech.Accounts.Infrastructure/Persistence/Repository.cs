@@ -1,32 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using GavinTech.Accounts.Application.DependencyInjection;
 using GavinTech.Accounts.Application.Interfaces.Infrastructure.Persistence;
 using GavinTech.Accounts.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace GavinTech.Accounts.Infrastructure.Persistence
 {
     [ScopedService]
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
     {
-        public IAsyncEnumerable<TEntity> GetAll()
-        {
-            throw new NotImplementedException();
-        }
+        private readonly DbSet<TEntity> _dbSet;
 
-        public void Add(TEntity entity)
-        {
-            throw new NotImplementedException();
-        }
+        public Repository(AccountsDbContext dbContext) =>
+            _dbSet = (DbSet<TEntity>)dbContext
+                .GetType()
+                .GetProperties()
+                .Where(p => typeof(DbSet<TEntity>).IsAssignableTo(p.PropertyType))
+                .Single()
+                .GetValue(dbContext);
 
-        public void Update(TEntity entity)
-        {
-            throw new NotImplementedException();
-        }
+        public IAsyncEnumerable<TEntity> GetAll() => _dbSet.AsAsyncEnumerable();
 
-        public void Delete(TEntity entity)
-        {
-            throw new NotImplementedException();
-        }
+        public void Add(TEntity entity) => _dbSet.Add(entity);
+
+        public void Delete(TEntity entity) => _dbSet.Remove(entity);
     }
 }
