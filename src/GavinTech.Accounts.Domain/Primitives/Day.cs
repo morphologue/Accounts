@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Globalization;
 
 namespace GavinTech.Accounts.Domain.Primitives
 {
     public struct Day : IEquatable<Day>, IComparable, IComparable<Day>
     {
+        public const string OneFormatToRuleThemAll = "yyyy'-'MM'-'dd";
         public static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         // Operators
@@ -19,6 +21,12 @@ namespace GavinTech.Accounts.Domain.Primitives
 
         public Day(int offset) => Offset = offset;
         public Day(DateTime dateTime) => Offset = (dateTime - Epoch).Days;
+        public Day(string dayString) : this(DateTime.ParseExact(
+            dayString,
+            OneFormatToRuleThemAll,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal
+        )) { }
 
         // Equality
         public override bool Equals(object? other) => Offset.Equals(ExtractOffset(other));
@@ -30,7 +38,7 @@ namespace GavinTech.Accounts.Domain.Primitives
         public int CompareTo(Day otherDay) => Offset.CompareTo(otherDay.Offset);
 
         // Other object overrides
-        public override string ToString() => ToDateTime().ToString("yyyy'-'MM'-'dd");
+        public override string ToString() => ToDateTime().ToString(OneFormatToRuleThemAll);
 
         // Instance methods
         public DateTime ToDateTime() => Epoch.AddDays(Offset);

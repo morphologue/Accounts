@@ -29,11 +29,38 @@ namespace GavinTech.Accounts.UnitTests.Domain.Primitives
         ]
         public void ConstructorDateTime_RoundsDownToNearestDay(string dateString, int expectedOffset)
         {
-            var towardsEndOfUtcDay = DateTime.Parse(dateString).ToUniversalTime();
+            var dateTime = DateTime.Parse(dateString).ToUniversalTime();
 
-            var result = new Day(towardsEndOfUtcDay);
+            var result = new Day(dateTime);
 
             result.Offset.Should().Be(expectedOffset);
         }
+
+        [Fact]
+        public void ConstructorString_UnderstandsDateAsUtc()
+        {
+            var dateString = "2021-03-04";
+
+            var result = new Day(dateString);
+
+            result.Offset.Should().Be(18690);
+        }
+
+        [
+            Theory,
+            InlineData("2021-03-04Z"),
+            InlineData(" 2021-03-04"),
+            InlineData("2021-03-04 "),
+            InlineData("2021-3-04"),
+            InlineData("2021-03-4"),
+            InlineData("2021-03-04T23:11:10Z")
+        ]
+        public void ConstructorString_ThrowsFormatException_GivenAnyDeviationFromTheFormat(string deviation)
+        {
+            Func<Day> action = () => new Day(deviation);
+
+            action.Should().Throw<FormatException>();
+        }
+
     }
 }
