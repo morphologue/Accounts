@@ -2,7 +2,7 @@
 
 namespace GavinTech.Accounts.Domain.Entities
 {
-    public class TransactionTemplate : EntityBase
+    public class TransactionTemplate
     {
         public Day Day { get; set; }
         public Amount Amount { get; set; }

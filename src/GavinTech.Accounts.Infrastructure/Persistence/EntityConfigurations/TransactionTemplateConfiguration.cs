@@ -1,14 +1,14 @@
 ﻿using GavinTech.Accounts.Domain.Entities;
 using GavinTech.Accounts.Infrastructure.Persistence.ValueConversion;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfigurations
 {
-    public class TransactionTemplateConfiguration : IEntityTypeConfiguration<TransactionTemplate>
+    public class TransactionTemplateConfiguration : IdentifiedConfigurationBase<TransactionTemplate>
     {
-        public void Configure(EntityTypeBuilder<TransactionTemplate> builder)
+        public override void Configure(EntityTypeBuilder<TransactionTemplate> builder)
         {
+            base.Configure(builder);
             builder.HasDiscriminator<bool>("IsRecurring")
                 .HasValue<TransactionTemplate>(false)
                 .HasValue<RecurringTransactionTemplate>(true);

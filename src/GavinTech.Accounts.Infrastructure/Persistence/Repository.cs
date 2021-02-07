@@ -2,13 +2,12 @@
 using System.Linq;
 using GavinTech.Accounts.Application.DependencyInjection;
 using GavinTech.Accounts.Application.Interfaces.Infrastructure.Persistence;
-using GavinTech.Accounts.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace GavinTech.Accounts.Infrastructure.Persistence
 {
     [ScopedService]
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : EntityBase
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         private readonly DbSet<TEntity> _dbSet;
 
