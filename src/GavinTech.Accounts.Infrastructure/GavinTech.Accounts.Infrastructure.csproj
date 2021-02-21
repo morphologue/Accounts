@@ -8,6 +8,6 @@
     <ProjectReference Include="..\GavinTech.Accounts.Application\GavinTech.Accounts.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.3" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GavinTech.Accounts.Application.DependencyInjection;
 using GavinTech.Accounts.Application.Interfaces.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GavinTech.Accounts.Infrastructure.Persistence
 {
     [ScopedService]
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         private readonly DbSet<TEntity> _dbSet;
 
@@ -19,7 +20,7 @@ namespace GavinTech.Accounts.Infrastructure.Persistence
                 .Single()
                 .GetValue(dbContext);
 
-        public IAsyncEnumerable<TEntity> GetAll() => _dbSet.AsAsyncEnumerable();
+        public Task<List<TEntity>> GetAllAsync() => _dbSet.ToListAsync();
 
         public void Add(TEntity entity) => _dbSet.Add(entity);
 
