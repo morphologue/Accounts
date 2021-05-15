@@ -8,7 +8,7 @@ namespace GavinTech.Accounts.Infrastructure.Persistence
         public AccountsDbContext CreateDbContext(string[] args)
         {
             var services = new ServiceCollection();
-            new Layer().RegisterDependencies(services, args);
+            new Layer(new()).RegisterDependencies(services);
             var provider = services.BuildServiceProvider();
             // This IServiceScope is intentionally never disposed. The context
             // returned by this method is used (only) by EF Core migrations, and

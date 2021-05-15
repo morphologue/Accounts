@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using GavinTech.Accounts.Domain.Primitives;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using GavinTech.Accounts.Domain.Primitives;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GavinTech.Accounts.Infrastructure.Persistence.ValueConversion
 {
     internal class HashSetOfDayConverter : ValueConverter<HashSet<Day>, string>
     {
-        internal static HashSetOfDayConverter Instance = new HashSetOfDayConverter();
+        internal static HashSetOfDayConverter Instance = new();
 
         private HashSetOfDayConverter() : base(
-            set => JsonSerializer.Serialize(set, null),
-            json => JsonSerializer.Deserialize<HashSet<Day>>(json, null))
+            set => JsonSerializer.Serialize(set.Select(d => d.Offset), null),
+            json => (JsonSerializer.Deserialize<List<int>>(json, null) ?? Enumerable.Empty<int>())
+                .Select(f => new Day(f))
+                .ToHashSet())
         { }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using GavinTech.Accounts.CrossCutting.DependencyInjection;
+using System;
 using System.Threading.Tasks;
-using GavinTech.Accounts.Application.DependencyInjection;
 
 namespace GavinTech.Accounts.Presentation.ConsoleApp
 {

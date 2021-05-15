@@ -1,8 +1,7 @@
-﻿using System;
+﻿using GavinTech.Accounts.Application.Interfaces.Infrastructure.Persistence;
+using GavinTech.Accounts.CrossCutting.DependencyInjection;
 using System.Threading;
 using System.Threading.Tasks;
-using GavinTech.Accounts.Application.DependencyInjection;
-using GavinTech.Accounts.Application.Interfaces.Infrastructure.Persistence;
 
 namespace GavinTech.Accounts.Infrastructure.Persistence
 {

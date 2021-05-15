@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using GavinTech.Accounts.Domain.Entities;
-using GavinTech.Accounts.Domain.Primitives;
+﻿using GavinTech.Accounts.Domain.Entities;
 using GavinTech.Accounts.Infrastructure.Persistence.ValueConversion;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfigurations
 {
-    public class RecurringTransactionTemplateConfiguration : IEntityTypeConfiguration<RecurringTransactionTemplate>
+    internal class RecurringTransactionTemplateConfiguration : IEntityTypeConfiguration<RecurringTransactionTemplate>
     {
+        public RecurringTransactionTemplateConfiguration(Layer.Options _) { }
+
         public void Configure(EntityTypeBuilder<RecurringTransactionTemplate> builder)
         {
             builder.Property(e => e.UntilExcl)

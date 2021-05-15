@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfigurations
 {
-    public class TransactionTemplateConfiguration : IdentifiedConfigurationBase<TransactionTemplate>
+    internal class TransactionTemplateConfiguration : IdentifiedConfigurationBase<TransactionTemplate>
     {
+        public TransactionTemplateConfiguration(Layer.Options layerOptions) : base(layerOptions) { }
+
         public override void Configure(EntityTypeBuilder<TransactionTemplate> builder)
         {
             base.Configure(builder);

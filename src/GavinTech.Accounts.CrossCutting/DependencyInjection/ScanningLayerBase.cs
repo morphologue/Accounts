@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace GavinTech.Accounts.Application.DependencyInjection
+namespace GavinTech.Accounts.CrossCutting.DependencyInjection
 {
     public abstract class ScanningLayerBase : ILayer
     {
-        public virtual void RegisterDependencies(ServiceCollection services, string[] args)
+        public virtual void RegisterDependencies(ServiceCollection services)
         {
             // Must get this outside the delegate!
             var callingAssembly = Assembly.GetCallingAssembly();
