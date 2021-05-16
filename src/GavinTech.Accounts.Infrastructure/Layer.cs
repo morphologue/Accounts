@@ -1,4 +1,4 @@
-﻿using GavinTech.Accounts.Application.Interfaces.Infrastructure.Persistence;
+﻿using GavinTech.Accounts.Application.Interfaces.Persistence;
 using GavinTech.Accounts.CrossCutting.DependencyInjection;
 using GavinTech.Accounts.Infrastructure.Interfaces;
 using GavinTech.Accounts.Infrastructure.Persistence;

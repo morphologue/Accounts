@@ -1,4 +1,5 @@
-﻿using GavinTech.Accounts.Application.Interfaces.Infrastructure.Persistence;
+﻿using GavinTech.Accounts.Application.Interfaces.Persistence;
+using GavinTech.Accounts.Domain.Entities;
 using GavinTech.Accounts.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GavinTech.Accounts.Infrastructure.Persistence
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity
     {
         private readonly DbSet<TEntity> _dbSet;
         private readonly AccountsDbContext _dbContext;
