@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 namespace GavinTech.Accounts.Infrastructure.Persistence
 {
     [ScopedService]
-    public class UnitOfWork : IUnitOfWork
+    internal class UnitOfWork : IUnitOfWork
     {
         private readonly AccountsDbContext _dbContext;
+        private readonly IChangeTrackingFlags _flags;
 
-        public UnitOfWork(AccountsDbContext dbContext) => _dbContext = dbContext;
+        public UnitOfWork(AccountsDbContext dbContext, IChangeTrackingFlags flags)
+        {
+            _dbContext = dbContext;
+            _flags = flags;
+        }
+
+        public void EnableChangeTracking() => _flags.IsChangeTrackingEnabled = true;
 
         public Task SaveChangesAsync(CancellationToken ct) => _dbContext.SaveChangesAsync(ct);
     }

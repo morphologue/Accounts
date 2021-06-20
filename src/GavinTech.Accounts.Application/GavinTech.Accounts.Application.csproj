@@ -4,6 +4,9 @@
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GavinTech.Accounts.CrossCutting\GavinTech.Accounts.CrossCutting.csproj" />

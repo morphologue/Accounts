@@ -11,6 +11,7 @@ namespace GavinTech.Accounts.Domain.Primitives
         public static bool operator >(Amount lhs, Amount rhs) => lhs.CentCount > rhs.CentCount;
         public static bool operator <=(Amount lhs, Amount rhs) => lhs.CentCount <= rhs.CentCount;
         public static bool operator >=(Amount lhs, Amount rhs) => lhs.CentCount >= rhs.CentCount;
+        public static Amount operator +(Amount lhs, Amount rhs) => new(lhs.CentCount + rhs.CentCount);
 
         // The sole instance member
         public int CentCount { get; }

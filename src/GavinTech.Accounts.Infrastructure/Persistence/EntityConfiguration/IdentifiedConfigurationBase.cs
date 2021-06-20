@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 
-namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfigurations
+namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfiguration
 {
     internal abstract class IdentifiedConfigurationBase<T> : IEntityTypeConfiguration<T>
         where T : class

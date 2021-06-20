@@ -2,7 +2,7 @@
 using GavinTech.Accounts.Infrastructure.Persistence.ValueConversion;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfigurations
+namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfiguration
 {
     internal class AccountConfiguration : IdentifiedConfigurationBase<Account>
     {
@@ -13,6 +13,8 @@ namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfigurations
             base.Configure(builder);
             builder.Property(e => e.ClosedAfter)
                 .HasConversion(DayConverter.Instance);
+            builder.HasIndex(e => e.Name)
+                .IsUnique();
         }
     }
 }

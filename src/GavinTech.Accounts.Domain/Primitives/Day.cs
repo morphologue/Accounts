@@ -15,6 +15,7 @@ namespace GavinTech.Accounts.Domain.Primitives
         public static bool operator >(Day lhs, Day rhs) => lhs.Offset > rhs.Offset;
         public static bool operator <=(Day lhs, Day rhs) => lhs.Offset <= rhs.Offset;
         public static bool operator >=(Day lhs, Day rhs) => lhs.Offset >= rhs.Offset;
+        public static Day operator ++(Day day) => new(day.Offset + 1);
 
         // The sole instance member
         public int Offset { get; }
@@ -26,7 +27,8 @@ namespace GavinTech.Accounts.Domain.Primitives
             OneFormatToRuleThemAll,
             CultureInfo.InvariantCulture,
             DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal
-        )) { }
+        ))
+        { }
 
         // Equality
         public override bool Equals(object? other) => Offset.Equals(ExtractOffset(other));

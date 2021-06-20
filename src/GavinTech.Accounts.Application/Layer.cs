@@ -1,14 +1,15 @@
 ﻿using GavinTech.Accounts.CrossCutting.DependencyInjection;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Threading.Tasks;
 
 namespace GavinTech.Accounts.Application
 {
-    public class Layer : ILayer
+    public class Layer : ScanningLayerBase
     {
-        public void RegisterDependencies(ServiceCollection services) { }
-
-        public Task InitialiseAsync(IServiceProvider scopedProvider) => Task.CompletedTask;
+        public override void RegisterDependencies(ServiceCollection services)
+        {
+            base.RegisterDependencies(services);
+            services.AddMediatR(config => config.AsScoped(), typeof(Layer).Assembly);
+        }
     }
 }

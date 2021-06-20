@@ -2,7 +2,7 @@
 using GavinTech.Accounts.Infrastructure.Persistence.ValueConversion;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfigurations
+namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfiguration
 {
     internal class TransactionTemplateConfiguration : IdentifiedConfigurationBase<TransactionTemplate>
     {

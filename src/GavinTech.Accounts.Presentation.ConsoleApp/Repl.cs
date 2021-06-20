@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 namespace GavinTech.Accounts.Presentation.ConsoleApp
 {
     /// <summary>Read-eval-print loop</summary>
-    public interface IRepl
+    internal interface IRepl
     {
         Task ExecuteAsync();
     }
 
     [SingletonService]
-    public class Repl : IRepl
+    internal class Repl : IRepl
     {
         public Task ExecuteAsync()
         {

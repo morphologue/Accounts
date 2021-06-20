@@ -12,9 +12,9 @@ namespace GavinTech.Accounts.CrossCutting.DependencyInjection
             // Must get this outside the delegate!
             var callingAssembly = Assembly.GetCallingAssembly();
             services.Scan(scan => scan.FromAssemblies(callingAssembly)
-                .AddClasses(classes => classes.WithAttribute<SingletonServiceAttribute>())
+                .AddClasses(classes => classes.WithAttribute<SingletonServiceAttribute>(), publicOnly: false)
                     .AsImplementedInterfaces().WithSingletonLifetime()
-                .AddClasses(classes => classes.WithAttribute<ScopedServiceAttribute>())
+                .AddClasses(classes => classes.WithAttribute<ScopedServiceAttribute>(), publicOnly: false)
                     .AsImplementedInterfaces().WithScopedLifetime());
         }
 
