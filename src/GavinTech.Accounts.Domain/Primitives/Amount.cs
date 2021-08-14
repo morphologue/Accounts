@@ -20,8 +20,8 @@ namespace GavinTech.Accounts.Domain.Primitives
 
         // Equality
         public override bool Equals(object? other) => CentCount.Equals(ExtractCentCount(other));
-        public override int GetHashCode() => CentCount.GetHashCode();
-        public bool Equals(Amount otherAmount) => CentCount.Equals(otherAmount);
+        public override int GetHashCode() => CentCount;
+        public bool Equals(Amount otherAmount) => CentCount.Equals(otherAmount.CentCount);
 
         // Comparison
         public int CompareTo(object? other) => CentCount.CompareTo(ExtractCentCount(other));

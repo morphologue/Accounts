@@ -22,7 +22,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
 
         public async Task<ICollection<Transaction>> Handle(TransactionQuery request, CancellationToken ct)
         {
-            var lazy = await _realiser.EnumerateAsync(request.StartDayIncl, request.EndDayExcl, request.AccountName,
+            var lazy = await _realiser.RealiseAsync(request.StartDayIncl, request.EndDayExcl, request.AccountName,
                 ct);
             return lazy.ToList();
         }

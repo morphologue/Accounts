@@ -6,7 +6,7 @@ namespace GavinTech.Accounts.Domain.Primitives
     public struct Day : IEquatable<Day>, IComparable, IComparable<Day>
     {
         public const string OneFormatToRuleThemAll = "yyyy'-'MM'-'dd";
-        public static readonly DateTime Epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        public static readonly DateTime Epoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         // Operators
         public static bool operator ==(Day lhs, Day rhs) => lhs.Offset == rhs.Offset;
@@ -32,8 +32,8 @@ namespace GavinTech.Accounts.Domain.Primitives
 
         // Equality
         public override bool Equals(object? other) => Offset.Equals(ExtractOffset(other));
-        public override int GetHashCode() => Offset.GetHashCode();
-        public bool Equals(Day otherDay) => Offset.Equals(otherDay);
+        public override int GetHashCode() => Offset;
+        public bool Equals(Day otherDay) => Offset.Equals(otherDay.Offset);
 
         // Comparison
         public int CompareTo(object? other) => Offset.CompareTo(ExtractOffset(other));

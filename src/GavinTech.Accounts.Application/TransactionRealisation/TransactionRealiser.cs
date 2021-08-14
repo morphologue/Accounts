@@ -13,7 +13,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
 {
     public interface ITransactionRealiser
     {
-        Task<IEnumerable<Transaction>> EnumerateAsync(
+        Task<IEnumerable<Transaction>> RealiseAsync(
             Day? startDay,
             Day endDay,
             string? accountName,
@@ -23,6 +23,12 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
     [ScopedService]
     internal class TransactionRealiser : ITransactionRealiser
     {
+        private class BumpedRecurringTransactionTemplate : RecurringTransactionTemplate
+        {
+            internal Day OriginalDay;
+            internal int Iteration;
+        }
+
         private readonly IRepository<Account> _accountRepo;
         private readonly IRepository<TransactionTemplate> _templateRepo;
 
@@ -34,7 +40,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
             _templateRepo = templateRepo;
         }
 
-        public async Task<IEnumerable<Transaction>> EnumerateAsync(
+        public async Task<IEnumerable<Transaction>> RealiseAsync(
             Day? startDay,
             Day endDay,
             string? accountName,
@@ -44,12 +50,12 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
                 .OrderBy(t => t.Amount)
                 .ThenBy(t => t.Account.Name)
                 .ToList();
-            var flattenedAccountNames = (await _accountRepo.GetAsync(ct))
+            var allAccounts = await _accountRepo.GetAsync(ct);
+            var flattenedAccountNamesWithClosure = allAccounts
                 .Where(a => accountName == null || a.IsUnderName(accountName))
-                .Select(a => a.Name)
-                .ToHashSet();
+                .ToDictionary(a => a.Name, a => a.GetHierarchicalClosedAfter());
 
-            if (orderedTemplates.Count == 0 || flattenedAccountNames.Count == 0)
+            if (orderedTemplates.Count == 0 || flattenedAccountNamesWithClosure.Count == 0)
             {
                 return Enumerable.Empty<Transaction>();
             }
@@ -57,14 +63,14 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
             // The following methods are lazy as realised transactions may be a never-ending
             // sequence.
             var trans = RealiseAll(orderedTemplates);
-            return Filter(trans, startDay, endDay, flattenedAccountNames);
+            return Filter(trans, startDay, endDay, flattenedAccountNamesWithClosure);
         }
 
         private static IEnumerable<Transaction> RealiseAll(IReadOnlyCollection<TransactionTemplate> templates)
         {
             var minDay = templates.Min(t => t.Day);
             var maxDay = templates.Max(t => t.Day);
-            var futureRecurrences = new Dictionary<Day, ICollection<RecurringTransactionTemplate>>();
+            var futureRecurrences = new Dictionary<Day, ICollection<BumpedRecurringTransactionTemplate>>();
             for (var day = minDay; day <= maxDay || futureRecurrences.Count > 0; ++day)
             {
                 foreach (var tran in ProcessDay(day, templates, futureRecurrences))
@@ -77,7 +83,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
         private static IEnumerable<Transaction> ProcessDay(
             Day day,
             IReadOnlyCollection<TransactionTemplate> templates,
-            Dictionary<Day, ICollection<RecurringTransactionTemplate>> futureRecurrences)
+            Dictionary<Day, ICollection<BumpedRecurringTransactionTemplate>> futureRecurrences)
         {
             var heutige = templates.Where(t => t.Day == day);
             if (futureRecurrences.TryGetValue(day, out var triggered))
@@ -109,12 +115,21 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
 
         private static void AdvanceRecurrence(
             RecurringTransactionTemplate triggered,
-            Dictionary<Day, ICollection<RecurringTransactionTemplate>> futureRecurrences)
+            Dictionary<Day, ICollection<BumpedRecurringTransactionTemplate>> futureRecurrences)
         {
+            var bumpedTriggered = triggered as BumpedRecurringTransactionTemplate;
+            var originalDay = bumpedTriggered?.OriginalDay ?? triggered.Day;
+            var originalDateTime = originalDay.ToDateTime();
+            var originalMorgen = originalDateTime.AddDays(1);
+            var iteration = (bumpedTriggered?.Iteration ?? 0) + 1;
+
             var nextDay = new Day(triggered.Basis switch
             {
                 RecurrenceBasis.Daily => triggered.Day.ToDateTime().AddDays(triggered.Multiplicand),
-                RecurrenceBasis.Monthly => triggered.Day.ToDateTime().AddMonths((int)triggered.Multiplicand),
+                RecurrenceBasis.Monthly when originalDateTime.Month == originalMorgen.Month =>
+                    originalDateTime.AddMonths((int)triggered.Multiplicand * iteration),
+                RecurrenceBasis.Monthly =>
+                    originalMorgen.AddMonths((int)triggered.Multiplicand * iteration).AddDays(-1),
                 _ => throw new NotSupportedException(triggered.Basis.ToString())
             });
 
@@ -123,7 +138,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
                 return;
             }
 
-            var nextRecurrence = new RecurringTransactionTemplate
+            var nextRecurrence = new BumpedRecurringTransactionTemplate
             {
                 Day = nextDay,
                 Amount = triggered.Amount,
@@ -132,12 +147,14 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
                 Basis = triggered.Basis,
                 Multiplicand = triggered.Multiplicand,
                 UntilExcl = triggered.UntilExcl,
-                Tombstones = triggered.Tombstones
+                Tombstones = triggered.Tombstones,
+                OriginalDay = originalDay,
+                Iteration = iteration
             };
 
             if (!futureRecurrences.TryGetValue(nextDay, out var recurrences))
             {
-                futureRecurrences[nextDay] = recurrences = new List<RecurringTransactionTemplate>();
+                futureRecurrences[nextDay] = recurrences = new List<BumpedRecurringTransactionTemplate>();
             }
 
             recurrences.Add(nextRecurrence);
@@ -147,18 +164,19 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
             IEnumerable<Transaction> trans,
             Day? startDay,
             Day endDay,
-            HashSet<string> flattenedAccountNames)
+            Dictionary<string, Day?> flattenedAccountNamesWithClosure)
         {
             var runningTotal = new Amount();
             foreach (var tran in trans)
             {
-                if (!flattenedAccountNames.Contains(tran.AccountName)
+                if (!flattenedAccountNamesWithClosure.TryGetValue(tran.AccountName, out var closedAfter)
                     || (startDay.HasValue && startDay.Value > tran.Day))
                 {
                     continue;
                 }
 
-                if (endDay <= tran.Day)
+                if (endDay <= tran.Day
+                    || (closedAfter.HasValue && closedAfter.Value < tran.Day))
                 {
                     yield break;
                 }

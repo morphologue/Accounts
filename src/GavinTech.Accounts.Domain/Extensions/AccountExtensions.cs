@@ -1,4 +1,5 @@
 ﻿using GavinTech.Accounts.Domain.Entities;
+using GavinTech.Accounts.Domain.Primitives;
 
 namespace GavinTech.Accounts.Domain.Extensions
 {
@@ -15,6 +16,23 @@ namespace GavinTech.Accounts.Domain.Extensions
                 return false;
             }
             return IsUnderName(acct.Parent, name);
+        }
+
+        public static Day? GetHierarchicalClosedAfter(this Account startingPoint)
+        {
+            Day? result = null;
+            for (var acct = startingPoint; acct != null; acct = acct.Parent)
+            {
+                if (!acct.ClosedAfter.HasValue)
+                {
+                    continue;
+                }
+                if (!result.HasValue || acct.ClosedAfter < result.Value)
+                {
+                    result = acct.ClosedAfter;
+                }
+            }
+            return result;
         }
     }
 }
