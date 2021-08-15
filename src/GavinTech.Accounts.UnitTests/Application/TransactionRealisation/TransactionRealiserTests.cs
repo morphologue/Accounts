@@ -19,12 +19,16 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
         public TransactionRealiserTests()
         {
             var mockAccounts = new Mock<IRepository<Account>>();
-            mockAccounts.Setup(m => m.GetAsync(default, default))
+            mockAccounts.Setup(m => m.GetAsync(default))
                 .ReturnsAsync(_accounts);
+            mockAccounts.Setup(m => m.Identify(It.IsAny<Account>()))
+                .Returns<Account>(a => a.Name);
 
             var mockTemplates = new Mock<IRepository<TransactionTemplate>>();
-            mockTemplates.Setup(m => m.GetAsync(default, default))
+            mockTemplates.Setup(m => m.GetAsync(default))
                 .ReturnsAsync(_templates);
+            mockTemplates.Setup(m => m.Identify(It.IsAny<TransactionTemplate>()))
+                .Returns(string.Empty);
 
             _patient = new TransactionRealiser(mockAccounts.Object, mockTemplates.Object);
         }
@@ -64,7 +68,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(12002),
                     Description = "Fortnightly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 },
                 new Transaction
                 {
@@ -72,7 +76,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(24004),
                     Description = "Fortnightly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 },
                 new Transaction
                 {
@@ -80,7 +84,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12001),
                     RunningTotal = new Amount(36005),
                     Description = "Non-recurring",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 },
                 new Transaction
                 {
@@ -88,7 +92,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(48007),
                     Description = "Fortnightly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 }
             });
         }
@@ -163,7 +167,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12000),
                     RunningTotal = new Amount(12000),
                     Description = "Parent1 lesser amount",
-                    AccountName = "Parent1"
+                    AccountId = "Parent1"
                 },
                 new Transaction
                 {
@@ -171,7 +175,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12001),
                     RunningTotal = new Amount(24001),
                     Description = "Child template",
-                    AccountName = "Child"
+                    AccountId = "Child"
                 },
                 new Transaction
                 {
@@ -179,7 +183,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12001),
                     RunningTotal = new Amount(36002),
                     Description = "Parent1 equal amount",
-                    AccountName = "Parent1"
+                    AccountId = "Parent1"
                 }
             });
         }
@@ -219,7 +223,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(12002),
                     Description = "Fortnightly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 },
                 new Transaction
                 {
@@ -227,7 +231,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12001),
                     RunningTotal = new Amount(24003),
                     Description = "Non-recurring",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 },
                 new Transaction
                 {
@@ -235,7 +239,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(36005),
                     Description = "Fortnightly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 }
             });
         }
@@ -298,7 +302,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(12002),
                     Description = "EarlyClosingChild template",
-                    AccountName = "EarlyClosingChild"
+                    AccountId = "EarlyClosingChild"
                 },
                 new Transaction
                 {
@@ -306,7 +310,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(24004),
                     Description = "LateClosingParent template",
-                    AccountName = "LateClosingParent"
+                    AccountId = "LateClosingParent"
                 },
                 new Transaction
                 {
@@ -314,7 +318,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(36006),
                     Description = "LateClosingParent template",
-                    AccountName = "LateClosingParent"
+                    AccountId = "LateClosingParent"
                 }
             });
         }
@@ -362,7 +366,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(12002),
                     Description = "Monthly",
-                    AccountName = "Account"
+                    AccountId = "Account"
                 },
                 new Transaction
                 {
@@ -370,7 +374,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12001),
                     RunningTotal = new Amount(24003),
                     Description = "Non-recurring",
-                    AccountName = "Account"
+                    AccountId = "Account"
                 },
                 new Transaction
                 {
@@ -378,7 +382,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(36005),
                     Description = "Monthly",
-                    AccountName = "Account"
+                    AccountId = "Account"
                 }
             });
         }
@@ -412,7 +416,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(12002),
                     Description = "Fortnightly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 },
                 new Transaction
                 {
@@ -420,7 +424,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(24004),
                     Description = "Fortnightly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 }
             });
         }
@@ -455,7 +459,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(12002),
                     Description = "Monthly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 },
                 new Transaction
                 {
@@ -463,7 +467,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(24004),
                     Description = "Monthly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 },
                 new Transaction
                 {
@@ -471,7 +475,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(36006),
                     Description = "Monthly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 }
             });
         }
@@ -506,7 +510,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(12002),
                     Description = "Monthly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 },
                 new Transaction
                 {
@@ -514,7 +518,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(24004),
                     Description = "Monthly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 },
                 new Transaction
                 {
@@ -522,7 +526,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(36006),
                     Description = "Monthly",
-                    AccountName = "Root"
+                    AccountId = "Root"
                 }
             });
         }

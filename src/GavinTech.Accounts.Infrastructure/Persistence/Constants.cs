@@ -2,6 +2,7 @@
 {
     internal static class Constants
     {
+        internal const string IdColumnName = "Id";
         internal const string UserIdColumnName = "UserId";
     }
 }

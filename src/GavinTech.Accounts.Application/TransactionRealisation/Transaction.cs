@@ -8,6 +8,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
         public Amount Amount { get; set; }
         public Amount RunningTotal { get; set; }
         public string Description { get; set; } = string.Empty;
-        public string AccountName { get; set; } = string.Empty;
+        public string AccountId { get; set; } = string.Empty;
+        public string TemplateId { get; set; } = string.Empty;
     }
 }

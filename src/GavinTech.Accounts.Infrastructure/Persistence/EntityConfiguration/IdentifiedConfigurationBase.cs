@@ -14,9 +14,9 @@ namespace GavinTech.Accounts.Infrastructure.Persistence.EntityConfiguration
 
         public virtual void Configure(EntityTypeBuilder<T> builder)
         {
-            builder.Property<uint>("Id")
+            builder.Property<int>(Constants.IdColumnName)
                 .ValueGeneratedOnAdd();
-            builder.HasKey("Id");
+            builder.HasKey(Constants.IdColumnName);
             if (_layerOptions.IsMultiUser)
             {
                 builder.Property<Guid>(Constants.UserIdColumnName);

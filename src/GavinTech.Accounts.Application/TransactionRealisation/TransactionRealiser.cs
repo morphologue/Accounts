@@ -25,7 +25,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
     {
         private class BumpedRecurringTransactionTemplate : RecurringTransactionTemplate
         {
-            internal Day OriginalDay;
+            internal RecurringTransactionTemplate Original = new();
             internal int Iteration;
         }
 
@@ -51,11 +51,11 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
                 .ThenBy(t => t.Account.Name)
                 .ToList();
             var allAccounts = await _accountRepo.GetAsync(ct);
-            var flattenedAccountNamesWithClosure = allAccounts
+            var flattenedAccountIdsWithClosure = allAccounts
                 .Where(a => accountName == null || a.IsUnderName(accountName))
-                .ToDictionary(a => a.Name, a => a.GetHierarchicalClosedAfter());
+                .ToDictionary(a => _accountRepo.Identify(a), a => a.GetHierarchicalClosedAfter());
 
-            if (orderedTemplates.Count == 0 || flattenedAccountNamesWithClosure.Count == 0)
+            if (orderedTemplates.Count == 0 || flattenedAccountIdsWithClosure.Count == 0)
             {
                 return Enumerable.Empty<Transaction>();
             }
@@ -63,10 +63,10 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
             // The following methods are lazy as realised transactions may be a never-ending
             // sequence.
             var trans = RealiseAll(orderedTemplates);
-            return Filter(trans, startDay, endDay, flattenedAccountNamesWithClosure);
+            return Filter(trans, startDay, endDay, flattenedAccountIdsWithClosure);
         }
 
-        private static IEnumerable<Transaction> RealiseAll(IReadOnlyCollection<TransactionTemplate> templates)
+        private IEnumerable<Transaction> RealiseAll(IReadOnlyCollection<TransactionTemplate> templates)
         {
             var minDay = templates.Min(t => t.Day);
             var maxDay = templates.Max(t => t.Day);
@@ -80,7 +80,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
             }
         }
 
-        private static IEnumerable<Transaction> ProcessDay(
+        private IEnumerable<Transaction> ProcessDay(
             Day day,
             IReadOnlyCollection<TransactionTemplate> templates,
             Dictionary<Day, ICollection<BumpedRecurringTransactionTemplate>> futureRecurrences)
@@ -108,7 +108,8 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
                     Day = day,
                     Amount = tran.Amount,
                     Description = tran.Description,
-                    AccountName = tran.Account.Name
+                    AccountId = _accountRepo.Identify(tran.Account),
+                    TemplateId = _templateRepo.Identify((tran as BumpedRecurringTransactionTemplate)?.Original ?? tran)
                 };
             }
         }
@@ -118,8 +119,8 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
             Dictionary<Day, ICollection<BumpedRecurringTransactionTemplate>> futureRecurrences)
         {
             var bumpedTriggered = triggered as BumpedRecurringTransactionTemplate;
-            var originalDay = bumpedTriggered?.OriginalDay ?? triggered.Day;
-            var originalDateTime = originalDay.ToDateTime();
+            var original = bumpedTriggered?.Original ?? triggered;
+            var originalDateTime = original.Day.ToDateTime();
             var originalMorgen = originalDateTime.AddDays(1);
             var iteration = (bumpedTriggered?.Iteration ?? 0) + 1;
 
@@ -148,7 +149,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
                 Multiplicand = triggered.Multiplicand,
                 UntilExcl = triggered.UntilExcl,
                 Tombstones = triggered.Tombstones,
-                OriginalDay = originalDay,
+                Original = original,
                 Iteration = iteration
             };
 
@@ -164,7 +165,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
             IEnumerable<Transaction> trans,
             Day? startDay,
             Day endDay,
-            Dictionary<string, Day?> flattenedAccountNamesWithClosure)
+            Dictionary<string, Day?> flattenedAccountIdsWithClosure)
         {
             var runningTotal = new Amount();
             foreach (var tran in trans)
@@ -174,7 +175,7 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
                     yield break;
                 }
 
-                if (!flattenedAccountNamesWithClosure.TryGetValue(tran.AccountName, out var closedAfter)
+                if (!flattenedAccountIdsWithClosure.TryGetValue(tran.AccountId, out var closedAfter)
                     || (startDay.HasValue && startDay.Value > tran.Day)
                     || (closedAfter.HasValue && closedAfter.Value < tran.Day))
                 {

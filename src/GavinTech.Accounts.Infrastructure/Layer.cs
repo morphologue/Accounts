@@ -2,6 +2,7 @@
 using GavinTech.Accounts.CrossCutting.DependencyInjection;
 using GavinTech.Accounts.Infrastructure.Interfaces;
 using GavinTech.Accounts.Infrastructure.Persistence;
+using GavinTech.Accounts.Infrastructure.Persistence.EntityIdentification;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -30,6 +31,7 @@ namespace GavinTech.Accounts.Infrastructure
                 dbContextOptions.UseSqlite("Data Source=accounts.db", sqliteOptions =>
                     sqliteOptions.MigrationsAssembly("GavinTech.Accounts.Migrations.Sqlite")));
 
+            services.AddScoped(typeof(IEntityIdentifier<>), typeof(DefaultEntityIdentifier<>));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             // As IUserIdAccessor will only be registered by multi-user presentation layers, it
