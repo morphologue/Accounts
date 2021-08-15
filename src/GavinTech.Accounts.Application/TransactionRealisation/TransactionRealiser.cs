@@ -169,16 +169,16 @@ namespace GavinTech.Accounts.Application.TransactionRealisation
             var runningTotal = new Amount();
             foreach (var tran in trans)
             {
-                if (!flattenedAccountNamesWithClosure.TryGetValue(tran.AccountName, out var closedAfter)
-                    || (startDay.HasValue && startDay.Value > tran.Day))
-                {
-                    continue;
-                }
-
-                if (endDay <= tran.Day
-                    || (closedAfter.HasValue && closedAfter.Value < tran.Day))
+                if (endDay <= tran.Day)
                 {
                     yield break;
+                }
+
+                if (!flattenedAccountNamesWithClosure.TryGetValue(tran.AccountName, out var closedAfter)
+                    || (startDay.HasValue && startDay.Value > tran.Day)
+                    || (closedAfter.HasValue && closedAfter.Value < tran.Day))
+                {
+                    continue;
                 }
 
                 tran.RunningTotal = runningTotal += tran.Amount;

@@ -55,7 +55,7 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                 }
             });
 
-            var result = await _patient.RealiseAsync(null, new Day(129), null, default);
+            var result = await _patient.RealiseAsync(null, new Day(129), "Root", default);
 
             result.Should().BeEquivalentTo(new[] {
                 new Transaction
@@ -250,12 +250,13 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
                 },
                 new Account
                 {
-                    Name = "Closing",
-                    ClosedAfter = new Day("2021-05-31")
+                    Name = "LateClosingParent",
+                    ClosedAfter = new Day("2021-04-15")
                 },
                 new Account
                 {
-                    Name = "Account"
+                    Name = "EarlyClosingChild",
+                    ClosedAfter = new Day("2021-03-31")
                 }
             });
             _accounts[1].Parent = _accounts[0];
@@ -263,48 +264,57 @@ namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation
             _templates.AddRange(new[] {
                 new TransactionTemplate
                 {
-                    Day = new Day("2021-04-30"),
+                    Day = new Day("2021-04-16"),
                     Amount = new Amount(12001),
-                    Description = "Non-recurring",
-                    Account = _accounts[2]
+                    Description = "Invisible",
+                    Account = _accounts[1]
                 },
                 new RecurringTransactionTemplate
                 {
-                    Day = new Day("2021-03-31"),
+                    Day = new Day("2021-03-15"),
                     Amount = new Amount(12002),
-                    Description = "Monthly",
+                    Description = "LateClosingParent template",
+                    Account = _accounts[1],
+                    Basis = RecurrenceBasis.Monthly,
+                    Multiplicand = 1
+                },
+                new RecurringTransactionTemplate
+                {
+                    Day = new Day("2021-03-15"),
+                    Amount = new Amount(12002),
+                    Description = "EarlyClosingChild template",
                     Account = _accounts[2],
                     Basis = RecurrenceBasis.Monthly,
                     Multiplicand = 1
                 }
             });
 
-            var result = await _patient.RealiseAsync(new Day("2021-04-30"), new Day("2021-12-31"), null, default);
+            var result = await _patient.RealiseAsync(null, new Day("2021-12-31"), null, default);
 
             result.Should().BeEquivalentTo(new[] {
                 new Transaction
                 {
-                    Day = new Day("2021-04-30"),
+                    Day = new Day("2021-03-15"),
                     Amount = new Amount(12002),
                     RunningTotal = new Amount(12002),
-                    Description = "Monthly",
-                    AccountName = "Account"
+                    Description = "EarlyClosingChild template",
+                    AccountName = "EarlyClosingChild"
                 },
                 new Transaction
                 {
-                    Day = new Day("2021-04-30"),
-                    Amount = new Amount(12001),
-                    RunningTotal = new Amount(24003),
-                    Description = "Non-recurring",
-                    AccountName = "Account"
-                },
-                new Transaction
-                {
-                    Day = new Day("2021-05-31"),
+                    Day = new Day("2021-03-15"),
                     Amount = new Amount(12002),
-                    RunningTotal = new Amount(36005),
-                    Description = "Monthly",
-                    AccountName = "Account"
+                    RunningTotal = new Amount(24004),
+                    Description = "LateClosingParent template",
+                    AccountName = "LateClosingParent"
+                },
+                new Transaction
+                {
+                    Day = new Day("2021-04-15"),
+                    Amount = new Amount(12002),
+                    RunningTotal = new Amount(36006),
+                    Description = "LateClosingParent template",
+                    AccountName = "LateClosingParent"
                 }
             });
         }
