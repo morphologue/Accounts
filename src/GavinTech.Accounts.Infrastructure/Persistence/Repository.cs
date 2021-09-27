@@ -40,8 +40,8 @@ namespace GavinTech.Accounts.Infrastructure.Persistence
         public Task<List<TEntity>> GetAsync(CancellationToken ct) =>
             GetCommonAsync(null, ct);
 
-        public Task<List<TEntity>> GetAsync(string id, CancellationToken ct) =>
-            GetCommonAsync(_identifier.MakePredicate(id), ct);
+        public async Task<TEntity?> GetAsync(string id, CancellationToken ct) =>
+            (await GetCommonAsync(_identifier.MakePredicate(id), ct)).FirstOrDefault();
 
         public string Identify(TEntity entity) =>
             _identifier.Identify(entity);
@@ -61,6 +61,12 @@ namespace GavinTech.Accounts.Infrastructure.Persistence
         {
             RequireChangeTracking();
             _dbSet.Remove(entity);
+        }
+
+        public void Delete(IEnumerable<TEntity> entities)
+        {
+            RequireChangeTracking();
+            _dbSet.RemoveRange(entities);
         }
 
         private void RequireChangeTracking()

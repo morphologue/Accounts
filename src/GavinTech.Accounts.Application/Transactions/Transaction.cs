@@ -1,6 +1,6 @@
 ﻿using GavinTech.Accounts.Domain.Primitives;
 
-namespace GavinTech.Accounts.Application.TransactionRealisation
+namespace GavinTech.Accounts.Application.Transactions
 {
     public class Transaction
     {

@@ -17,9 +17,10 @@ namespace GavinTech.Accounts.Infrastructure.Persistence
             _layerOptions = layerOptions;
         }
 
-        public DbSet<Account>? Accounts { get; set; }
-        public DbSet<TransactionTemplate>? TransactionTemplates { get; set; }
-        public DbSet<RecurringTransactionTemplate>? RecurringTransactionTemplates { get; set; }
+        public DbSet<Account> Accounts => Set<Account>();
+        public DbSet<TransactionTemplate> TransactionTemplates => Set<TransactionTemplate>();
+        public DbSet<RecurringTransactionTemplate> RecurringTransactionTemplates =>
+            Set<RecurringTransactionTemplate>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

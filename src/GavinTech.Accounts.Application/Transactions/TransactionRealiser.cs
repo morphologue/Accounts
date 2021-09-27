@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GavinTech.Accounts.Application.TransactionRealisation
+namespace GavinTech.Accounts.Application.Transactions
 {
     public interface ITransactionRealiser
     {

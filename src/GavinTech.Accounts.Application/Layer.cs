@@ -1,4 +1,5 @@
-﻿using GavinTech.Accounts.CrossCutting.DependencyInjection;
+﻿using GavinTech.Accounts.Application.Templates;
+using GavinTech.Accounts.CrossCutting.DependencyInjection;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ namespace GavinTech.Accounts.Application
         {
             base.RegisterDependencies(services);
             services.AddMediatR(config => config.AsScoped(), typeof(Layer).Assembly);
+            services.AddScoped(typeof(ITemplateWriter<>), typeof(TemplateWriter<>));
         }
     }
 }

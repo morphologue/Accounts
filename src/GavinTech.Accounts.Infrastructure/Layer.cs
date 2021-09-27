@@ -41,9 +41,17 @@ namespace GavinTech.Accounts.Infrastructure
                 () => provider.GetRequiredService<IUserIdAccessor>());
         }
 
-        public override Task InitialiseAsync(IServiceProvider scopedProvider)
+        public override async Task InitialiseAsync(IServiceProvider scopedProvider)
         {
-            return scopedProvider.GetRequiredService<AccountsDbContext>().Database.MigrateAsync();
+            var dbContext = scopedProvider.GetRequiredService<AccountsDbContext>();
+            await dbContext.Database.MigrateAsync();
+
+            if (!await dbContext.Accounts.AnyAsync())
+            {
+                // Create the root account.
+                dbContext.Accounts.Add(new());
+                await dbContext.SaveChangesAsync();
+            }
         }
     }
 }
