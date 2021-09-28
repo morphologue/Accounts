@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace GavinTech.Accounts.Application.Transactions
 {
-    public interface ITransactionRealiser
+    internal interface ITransactionRealiser
     {
         Task<IEnumerable<Transaction>> RealiseAsync(
-            Day? startDay,
-            Day endDay,
+            Day? startDayIncl,
+            Day endDayIncl,
             string? accountName,
             CancellationToken ct);
     }

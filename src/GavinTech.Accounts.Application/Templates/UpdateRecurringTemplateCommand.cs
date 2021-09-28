@@ -3,7 +3,6 @@ using GavinTech.Accounts.Domain.Exceptions;
 using GavinTech.Accounts.Domain.Primitives;
 using GavinTech.Accounts.Domain.Utilities;
 using MediatR;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +18,6 @@ namespace GavinTech.Accounts.Application.Templates
         public PatchBox<RecurrenceBasis> Basis { get; init; }
         public PatchBox<uint> Multiplicand { get; init; }
         public PatchBox<Day?> UntilExcl { get; init; }
-        public PatchBox<HashSet<Day>> Tombstones { get; init; } = new() { Value = new HashSet<Day>() };
     }
 
     internal class UpdateRecurringTemplateCommandHandler : IRequestHandler<UpdateRecurringTemplateCommand>
@@ -42,7 +40,10 @@ namespace GavinTech.Accounts.Application.Templates
 
                 if (request.Multiplicand.IsSpecified)
                 {
-                    template.Multiplicand = request.Multiplicand.Value;
+                    var multiplicand = request.Multiplicand.Value;
+                    template.Multiplicand = multiplicand > 0
+                        ? multiplicand
+                        : throw new BadRequestException($"{nameof(request.Multiplicand)} must be greater than zero");
                 }
 
                 if (request.UntilExcl.IsSpecified)
@@ -50,11 +51,7 @@ namespace GavinTech.Accounts.Application.Templates
                     template.UntilExcl = request.UntilExcl.Value;
                 }
 
-                if (request.Tombstones.IsSpecified)
-                {
-                    template.Tombstones = request.Tombstones.Value
-                        ?? throw new BadRequestException($"{nameof(request.Tombstones)} may not be null");
-                }
+                return Task.CompletedTask;
             });
 
             return Unit.Value;

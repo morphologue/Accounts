@@ -4,8 +4,9 @@ using MediatR;
 
 namespace GavinTech.Accounts.Application.Templates
 {
-    public class CreateRecurringTemplateCommand : IRequest, ITemplateCreationRequest, IRecurringTemplateCreationRequest
+    public class SpliceRecurringTemplateCommand : IRequest, ITemplateSpliceRequest, IRecurringTemplateCreationRequest
     {
+        public string Id { get; init; } = string.Empty;
         public string AccountName { get; init; } = string.Empty;
         public Day Day { get; init; }
         public Amount Amount { get; init; }
@@ -15,10 +16,10 @@ namespace GavinTech.Accounts.Application.Templates
         public Day? UntilExcl { get; init; }
     }
 
-    internal class CreateRecurringTemplateCommandHandler
-        : RecurringTemplateCreationCommandBase<CreateRecurringTemplateCommand>
+    internal class SpliceRecurringTemplateCommandHandler
+        : RecurringTemplateCreationCommandBase<SpliceRecurringTemplateCommand>
     {
-        public CreateRecurringTemplateCommandHandler(ITemplateWriter<RecurringTransactionTemplate> writer)
-            : base(writer.CreateAsync) { }
+        public SpliceRecurringTemplateCommandHandler(ITemplateWriter<RecurringTransactionTemplate> writer)
+            : base(writer.SpliceAsync) { }
     }
 }

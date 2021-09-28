@@ -1,5 +1,5 @@
 ﻿using GavinTech.Accounts.Application.Interfaces.Persistence;
-using GavinTech.Accounts.CrossCutting.DependencyInjection;
+using GavinTech.Accounts.Application.Transactions;
 using GavinTech.Accounts.Domain.Entities;
 using GavinTech.Accounts.Domain.Exceptions;
 using GavinTech.Accounts.Domain.Primitives;
@@ -13,8 +13,9 @@ namespace GavinTech.Accounts.Application.Templates
     internal interface ITemplateWriter<T>
         where T : TransactionTemplate, new()
     {
-        Task<string> CreateAsync(ITemplateCreationRequest request, CancellationToken ct, Action<T>? extender = null);
-        Task UpdateAsync(ITemplateUpdateRequest request, CancellationToken ct, Action<T>? extender = null);
+        Task CreateAsync(ITemplateCreationRequest request, CancellationToken ct, Func<T, Task>? extender = null);
+        Task UpdateAsync(ITemplateUpdateRequest request, CancellationToken ct, Func<T, Task>? extender = null);
+        Task SpliceAsync(ITemplateSpliceRequest request, CancellationToken ct, Func<T, Task>? extender = null);
     }
 
     internal interface ITemplateCreationRequest
@@ -34,27 +35,34 @@ namespace GavinTech.Accounts.Application.Templates
         PatchBox<string> Description { get; }
     }
 
+    internal interface ITemplateSpliceRequest : ITransactionDeletionRequest, ITemplateCreationRequest
+    {
+    }
+
     internal class TemplateWriter<T> : ITemplateWriter<T>
         where T : TransactionTemplate, new()
     {
         private readonly IRepository<Account> _accountRepo;
         private readonly IRepository<T> _templateRepo;
         private readonly IUnitOfWork _uow;
+        private readonly ITransactionDeleter _deleter;
 
         public TemplateWriter(
             IRepository<Account> accountRepo,
             IRepository<T> templateRepo,
-            IUnitOfWork uow)
+            IUnitOfWork uow,
+            ITransactionDeleter deleter)
         {
             _accountRepo = accountRepo;
             _templateRepo = templateRepo;
             _uow = uow;
+            _deleter = deleter;
         }
 
-        public async Task<string> CreateAsync(
+        public async Task CreateAsync(
             ITemplateCreationRequest request,
             CancellationToken ct,
-            Action<T>? extender = null)
+            Func<T, Task>? extender = null)
         {
             _uow.EnableChangeTracking();
 
@@ -72,18 +80,19 @@ namespace GavinTech.Accounts.Application.Templates
                 Description = request.Description,
                 Account = account
             };
-            extender?.Invoke(creature);
+            if (extender != null)
+            {
+                await extender(creature);
+            }
             _templateRepo.Add(creature);
 
             await _uow.SaveChangesAsync(ct);
-
-            return _templateRepo.Identify(creature);
         }
 
         public async Task UpdateAsync(
             ITemplateUpdateRequest request,
             CancellationToken ct,
-            Action<T>? extender = null)
+            Func<T, Task>? extender = null)
         {
             _uow.EnableChangeTracking();
 
@@ -113,9 +122,24 @@ namespace GavinTech.Accounts.Application.Templates
                     ?? throw new BadRequestException($"{nameof(request.Description)} must not be null");
             }
 
-            extender?.Invoke(template);
+            if (extender != null)
+            {
+                await extender(template);
+            }
 
             await _uow.SaveChangesAsync(ct);
+        }
+
+        public Task SpliceAsync(ITemplateSpliceRequest request, CancellationToken ct, Func<T, Task>? extender = null)
+        {
+            return CreateAsync(request, ct, async template =>
+            {
+                if (extender != null)
+                {
+                    await extender(template);
+                }
+                await _deleter.DeleteAsync(request, ct);
+            });
         }
     }
 }
