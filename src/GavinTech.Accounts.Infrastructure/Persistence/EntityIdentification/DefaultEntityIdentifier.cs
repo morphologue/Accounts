@@ -14,7 +14,7 @@ namespace GavinTech.Accounts.Infrastructure.Persistence.EntityIdentification
             _dbContext = dbContext;
 
         public string Identify(TEntity entity) =>
-            _dbContext.Entry(entity).Property(Constants.IdColumnName).CurrentValue.ToString() ?? string.Empty;
+            _dbContext.Entry(entity).Property(Constants.IdColumnName).CurrentValue?.ToString() ?? string.Empty;
 
         public Expression<Func<TEntity, bool>> MakePredicate(string id) =>
             entity => EF.Property<int>(entity, Constants.IdColumnName) == int.Parse(id);

@@ -11,8 +11,8 @@ namespace GavinTech.Accounts.Infrastructure.Persistence.ValueConversion
         internal static HashSetOfDayConverter Instance = new();
 
         private HashSetOfDayConverter() : base(
-            set => JsonSerializer.Serialize(set.Select(d => d.Offset), null),
-            json => (JsonSerializer.Deserialize<List<int>>(json, null) ?? Enumerable.Empty<int>())
+            set => JsonSerializer.Serialize(set.Select(d => d.Offset), (JsonSerializerOptions?)null),
+            json => (JsonSerializer.Deserialize<List<int>>(json, (JsonSerializerOptions?)null) ?? Enumerable.Empty<int>())
                 .Select(f => new Day(f))
                 .ToHashSet())
         { }

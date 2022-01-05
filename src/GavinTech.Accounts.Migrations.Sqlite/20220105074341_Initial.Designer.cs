@@ -6,17 +6,18 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace GavinTech.Accounts.Migrations.Sqlite
 {
     [DbContext(typeof(AccountsDbContext))]
-    [Migration("20210815095734_Sign_Ids")]
-    partial class Sign_Ids
+    [Migration("20220105074341_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.9");
+            modelBuilder.HasAnnotation("ProductVersion", "6.0.1");
 
             modelBuilder.Entity("GavinTech.Accounts.Domain.Entities.Account", b =>
                 {
@@ -50,7 +51,7 @@ namespace GavinTech.Accounts.Migrations.Sqlite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("AccountId")
+                    b.Property<int>("AccountId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Amount")
@@ -108,7 +109,9 @@ namespace GavinTech.Accounts.Migrations.Sqlite
                 {
                     b.HasOne("GavinTech.Accounts.Domain.Entities.Account", "Account")
                         .WithMany()
-                        .HasForeignKey("AccountId");
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Account");
                 });

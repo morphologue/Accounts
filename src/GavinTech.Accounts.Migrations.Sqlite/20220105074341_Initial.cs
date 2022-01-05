@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
+#nullable disable
+
 namespace GavinTech.Accounts.Migrations.Sqlite
 {
     public partial class Initial : Migration
@@ -10,9 +12,9 @@ namespace GavinTech.Accounts.Migrations.Sqlite
                 name: "Accounts",
                 columns: table => new
                 {
-                    Id = table.Column<uint>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    ParentId = table.Column<uint>(type: "INTEGER", nullable: true),
+                    ParentId = table.Column<int>(type: "INTEGER", nullable: true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     ClosedAfter = table.Column<int>(type: "INTEGER", nullable: true)
                 },
@@ -23,20 +25,19 @@ namespace GavinTech.Accounts.Migrations.Sqlite
                         name: "FK_Accounts_Accounts_ParentId",
                         column: x => x.ParentId,
                         principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "TransactionTemplates",
                 columns: table => new
                 {
-                    Id = table.Column<uint>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Day = table.Column<int>(type: "INTEGER", nullable: false),
                     Amount = table.Column<int>(type: "INTEGER", nullable: false),
                     Description = table.Column<string>(type: "TEXT", nullable: false),
-                    AccountId = table.Column<uint>(type: "INTEGER", nullable: true),
+                    AccountId = table.Column<int>(type: "INTEGER", nullable: false),
                     IsRecurring = table.Column<bool>(type: "INTEGER", nullable: false),
                     Basis = table.Column<int>(type: "INTEGER", nullable: true),
                     Multiplicand = table.Column<uint>(type: "INTEGER", nullable: true),
@@ -51,8 +52,14 @@ namespace GavinTech.Accounts.Migrations.Sqlite
                         column: x => x.AccountId,
                         principalTable: "Accounts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Accounts_Name",
+                table: "Accounts",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Accounts_ParentId",

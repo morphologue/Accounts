@@ -34,12 +34,15 @@ namespace GavinTech.Accounts.Infrastructure.Persistence
                     ClassType: t,
                     InterfaceType: t.GetInterfaces().FirstOrDefault(i =>
                         i.IsGenericType && i.GetGenericTypeDefinition() == openInterface)
-                ))
-                .Where(p => p.InterfaceType != null);
+                ));
             var openMethod = builder.GetType().GetMethod(nameof(builder.ApplyConfiguration))
                 ?? throw new ApplicationException($"The {nameof(builder.ApplyConfiguration)}() method is missing");
             foreach (var (classType, interfaceType) in configTypes)
             {
+                if (interfaceType == null)
+                {
+                    continue;
+                }
                 var closedMethod = openMethod.MakeGenericMethod(interfaceType.GenericTypeArguments[0]);
                 var configInstance = Activator.CreateInstance(classType, _layerOptions);
                 closedMethod.Invoke(builder, new[] { configInstance });

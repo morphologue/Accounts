@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace GavinTech.Accounts.Migrations.Sqlite
 {
     [DbContext(typeof(AccountsDbContext))]
@@ -13,8 +15,7 @@ namespace GavinTech.Accounts.Migrations.Sqlite
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.9");
+            modelBuilder.HasAnnotation("ProductVersion", "6.0.1");
 
             modelBuilder.Entity("GavinTech.Accounts.Domain.Entities.Account", b =>
                 {
@@ -48,7 +49,7 @@ namespace GavinTech.Accounts.Migrations.Sqlite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("AccountId")
+                    b.Property<int>("AccountId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Amount")
@@ -106,7 +107,9 @@ namespace GavinTech.Accounts.Migrations.Sqlite
                 {
                     b.HasOne("GavinTech.Accounts.Domain.Entities.Account", "Account")
                         .WithMany()
-                        .HasForeignKey("AccountId");
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Account");
                 });
