@@ -1,21 +1,12 @@
 ﻿using GavinTech.Accounts.CrossCutting.DependencyInjection;
+using GavinTech.Accounts.Presentation.ConsoleApp;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 
-namespace GavinTech.Accounts.Presentation.ConsoleApp
+var provider = await new ILayer[]
 {
-    internal class Program
-    {
-        private static async Task Main()
-        {
-            var provider = await new ILayer[]
-            {
-                new Application.Layer(),
-                new Infrastructure.Layer(new()),
-                new Presentation.ConsoleApp.Layer()
-            }.BootstrapAsync();
+    new GavinTech.Accounts.Application.Layer(),
+    new GavinTech.Accounts.Infrastructure.Layer(new()),
+    new GavinTech.Accounts.Presentation.ConsoleApp.Layer()
+}.BootstrapAsync();
 
-            await provider.GetRequiredService<IRepl>().ExecuteAsync();
-        }
-    }
-}
+await provider.GetRequiredService<IRepl>().ExecuteAsync();

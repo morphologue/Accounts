@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace GavinTech.Accounts.Application.Interfaces.Persistence
+namespace GavinTech.Accounts.Application.Interfaces.Persistence;
+
+public interface IUnitOfWork
 {
-    public interface IUnitOfWork
-    {
-        void EnableChangeTracking();
-        Task SaveChangesAsync(CancellationToken ct);
-    }
+    void EnableChangeTracking();
+    Task SaveChangesAsync(CancellationToken ct);
 }

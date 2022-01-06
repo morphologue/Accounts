@@ -2,11 +2,10 @@
 using System;
 using System.Threading.Tasks;
 
-namespace GavinTech.Accounts.CrossCutting.DependencyInjection
+namespace GavinTech.Accounts.CrossCutting.DependencyInjection;
+
+public interface ILayer
 {
-    public interface ILayer
-    {
-        void RegisterDependencies(ServiceCollection services);
-        Task InitialiseAsync(IServiceProvider scopedProvider);
-    }
+    void RegisterDependencies(ServiceCollection services);
+    Task InitialiseAsync(IServiceProvider scopedProvider);
 }

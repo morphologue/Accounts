@@ -10,104 +10,103 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GavinTech.Accounts.Application.Accounts
+namespace GavinTech.Accounts.Application.Accounts;
+
+public class UpdateAccountCommand : IRequest
 {
-    public class UpdateAccountCommand : IRequest
+    public string? Name { get; init; }
+    public PatchBox<string> Parent { get; init; } = new() { Value = string.Empty };
+    public PatchBox<string> NewName { get; init; } = new() { Value = string.Empty };
+    public PatchBox<Day?> ClosedAfter { get; init; }
+}
+
+internal class UpdateAccountCommandHandler : IRequestHandler<UpdateAccountCommand>
+{
+    private readonly IRepository<Account> _accountRepo;
+    private readonly IUnitOfWork _uow;
+
+    public UpdateAccountCommandHandler(IRepository<Account> accountRepo, IUnitOfWork uow)
     {
-        public string? Name { get; init; }
-        public PatchBox<string> Parent { get; init; } = new() { Value = string.Empty };
-        public PatchBox<string> NewName { get; init; } = new() { Value = string.Empty };
-        public PatchBox<Day?> ClosedAfter { get; init; }
+        _accountRepo = accountRepo;
+        _uow = uow;
     }
 
-    internal class UpdateAccountCommandHandler : IRequestHandler<UpdateAccountCommand>
+    public async Task<Unit> Handle(UpdateAccountCommand request, CancellationToken ct)
     {
-        private readonly IRepository<Account> _accountRepo;
-        private readonly IUnitOfWork _uow;
+        _uow.EnableChangeTracking();
 
-        public UpdateAccountCommandHandler(IRepository<Account> accountRepo, IUnitOfWork uow)
+        var accounts = await _accountRepo.GetAsync(ct);
+        var account = accounts.FirstOrDefault(request.Name == null
+                ? (a => a.Parent == null)
+                : (a => a.Name == request.Name))
+            ?? throw new NotFoundException($"Cannot update non-existent account '{request.Name}'");
+
+        if (request.NewName.IsSpecified)
         {
-            _accountRepo = accountRepo;
-            _uow = uow;
+            UpdateName(accounts, account, request.NewName.Value);
         }
 
-        public async Task<Unit> Handle(UpdateAccountCommand request, CancellationToken ct)
+        if (request.Parent.IsSpecified)
         {
-            _uow.EnableChangeTracking();
-
-            var accounts = await _accountRepo.GetAsync(ct);
-            var account = accounts.FirstOrDefault(request.Name == null
-                    ? (a => a.Parent == null)
-                    : (a => a.Name == request.Name))
-                ?? throw new NotFoundException($"Cannot update non-existent account '{request.Name}'");
-
-            if (request.NewName.IsSpecified)
-            {
-                UpdateName(accounts, account, request.NewName.Value);
-            }
-
-            if (request.Parent.IsSpecified)
-            {
-                UpdateParent(accounts, account, request.Parent.Value);
-            }
-
-            if (request.ClosedAfter.IsSpecified)
-            {
-                UpdateClosedAfter(account, request.ClosedAfter.Value);
-            }
-
-            await _uow.SaveChangesAsync(ct);
-
-            return Unit.Value;
+            UpdateParent(accounts, account, request.Parent.Value);
         }
 
-        private static void UpdateName(IReadOnlyCollection<Account> accounts, Account account, string target)
+        if (request.ClosedAfter.IsSpecified)
         {
-            if (string.IsNullOrEmpty(target))
-            {
-                throw new BadRequestException($"Account '{account.Name}' requires a name");
-            }
-            if (target == account.Name)
-            {
-                throw new BadRequestException($"The name of account '{account.Name}' cannot be updated to itself");
-            }
-            if (accounts.Any(a => a.Name == target))
-            {
-                throw new ForbiddenException($"Another account with name '{account.Name}' already exists");
-            }
-
-            account.Name = target;
+            UpdateClosedAfter(account, request.ClosedAfter.Value);
         }
 
-        private void UpdateParent(IReadOnlyCollection<Account> accounts, Account account, string target)
+        await _uow.SaveChangesAsync(ct);
+
+        return Unit.Value;
+    }
+
+    private static void UpdateName(IReadOnlyCollection<Account> accounts, Account account, string target)
+    {
+        if (string.IsNullOrEmpty(target))
         {
-            if (target == account.Parent?.Name)
-            {
-                throw new BadRequestException($"The parent of account '{account.Name}' cannot be updated to itself");
-            }
-            var parent = accounts.FirstOrDefault(a => a.Name == target)
-                ?? throw new NotFoundException($"Parent account '{target}' cannot be found");
-
-            var subNames = accounts
-                .Where(a => a != account && a.IsUnderName(account.Name))
-                .Select(a => a.Name);
-            if (subNames.Any(s => s == target))
-            {
-                throw new ForbiddenException($"Circularity detected");
-            }
-
-            account.Parent = parent;
+            throw new BadRequestException($"Account '{account.Name}' requires a name");
+        }
+        if (target == account.Name)
+        {
+            throw new BadRequestException($"The name of account '{account.Name}' cannot be updated to itself");
+        }
+        if (accounts.Any(a => a.Name == target))
+        {
+            throw new ForbiddenException($"Another account with name '{account.Name}' already exists");
         }
 
-        private void UpdateClosedAfter(Account account, Day? target)
-        {
-            if (target == account.ClosedAfter)
-            {
-                throw new BadRequestException($"The closure date of account '{account.Name}' cannot be updated to "
-                    + "itself");
-            }
+        account.Name = target;
+    }
 
-            account.ClosedAfter = target;
+    private void UpdateParent(IReadOnlyCollection<Account> accounts, Account account, string target)
+    {
+        if (target == account.Parent?.Name)
+        {
+            throw new BadRequestException($"The parent of account '{account.Name}' cannot be updated to itself");
         }
+        var parent = accounts.FirstOrDefault(a => a.Name == target)
+            ?? throw new NotFoundException($"Parent account '{target}' cannot be found");
+
+        var subNames = accounts
+            .Where(a => a != account && a.IsUnderName(account.Name))
+            .Select(a => a.Name);
+        if (subNames.Any(s => s == target))
+        {
+            throw new ForbiddenException($"Circularity detected");
+        }
+
+        account.Parent = parent;
+    }
+
+    private void UpdateClosedAfter(Account account, Day? target)
+    {
+        if (target == account.ClosedAfter)
+        {
+            throw new BadRequestException($"The closure date of account '{account.Name}' cannot be updated to "
+                + "itself");
+        }
+
+        account.ClosedAfter = target;
     }
 }

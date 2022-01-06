@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace GavinTech.Accounts.Infrastructure.Interfaces
+namespace GavinTech.Accounts.Infrastructure.Interfaces;
+
+public interface IUserIdAccessor
 {
-    public interface IUserIdAccessor
-    {
-        public Guid UserId { get; }
-    }
+    public Guid UserId { get; }
 }

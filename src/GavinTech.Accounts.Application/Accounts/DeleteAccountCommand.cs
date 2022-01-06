@@ -7,59 +7,58 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GavinTech.Accounts.Application.Accounts
+namespace GavinTech.Accounts.Application.Accounts;
+
+public class DeleteAccountCommand : IRequest
 {
-    public class DeleteAccountCommand : IRequest
+    public string Name { get; init; } = string.Empty;
+}
+
+internal class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountCommand>
+{
+    private readonly IRepository<Account> _accountRepo;
+    private readonly IRepository<TransactionTemplate> _templateRepo;
+    private readonly IUnitOfWork _uow;
+
+    public DeleteAccountCommandHandler(
+        IRepository<Account> accountRepo,
+        IRepository<TransactionTemplate> templateRepo,
+        IUnitOfWork uow)
     {
-        public string Name { get; init; } = string.Empty;
+        _accountRepo = accountRepo;
+        _templateRepo = templateRepo;
+        _uow = uow;
     }
 
-    internal class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountCommand>
+    public async Task<Unit> Handle(DeleteAccountCommand request, CancellationToken ct)
     {
-        private readonly IRepository<Account> _accountRepo;
-        private readonly IRepository<TransactionTemplate> _templateRepo;
-        private readonly IUnitOfWork _uow;
+        _uow.EnableChangeTracking();
 
-        public DeleteAccountCommandHandler(
-            IRepository<Account> accountRepo,
-            IRepository<TransactionTemplate> templateRepo,
-            IUnitOfWork uow)
+        var accounts = (await _accountRepo
+                .GetAsync(ct))
+            .Where(a => a.IsUnderName(request.Name))
+            .ToHashSet();
+
+        if (accounts.Count == 0)
         {
-            _accountRepo = accountRepo;
-            _templateRepo = templateRepo;
-            _uow = uow;
+            throw new NotFoundException($"Cannot delete non-existent account '{request.Name}'");
         }
 
-        public async Task<Unit> Handle(DeleteAccountCommand request, CancellationToken ct)
+        var templates = (await _templateRepo
+                .GetAsync(ct))
+            .Where(t => accounts.Contains(t.Account));
+
+        _templateRepo.Delete(templates);
+        _accountRepo.Delete(accounts);
+
+        if (accounts.Any(a => a.Parent == null))
         {
-            _uow.EnableChangeTracking();
-
-            var accounts = (await _accountRepo
-                .GetAsync(ct))
-                .Where(a => a.IsUnderName(request.Name))
-                .ToHashSet();
-
-            if (accounts.Count == 0)
-            {
-                throw new NotFoundException($"Cannot delete non-existent account '{request.Name}'");
-            }
-
-            var templates = (await _templateRepo
-                .GetAsync(ct))
-                .Where(t => accounts.Contains(t.Account));
-
-            _templateRepo.Delete(templates);
-            _accountRepo.Delete(accounts);
-
-            if (accounts.Any(a => a.Parent == null))
-            {
-                // Re-create the root account.
-                _accountRepo.Add(new());
-            }
-
-            await _uow.SaveChangesAsync(ct);
-
-            return Unit.Value;
+            // Re-create the root account.
+            _accountRepo.Add(new());
         }
+
+        await _uow.SaveChangesAsync(ct);
+
+        return Unit.Value;
     }
 }

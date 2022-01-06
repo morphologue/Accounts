@@ -4,31 +4,30 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GavinTech.Accounts.Application.Transactions
+namespace GavinTech.Accounts.Application.Transactions;
+
+public class DeleteTransactionCommand : IRequest, ITransactionDeletionRequest
 {
-    public class DeleteTransactionCommand : IRequest, ITransactionDeletionRequest
+    public string Id { get; init; } = string.Empty;
+    public Day Day { get; init; }
+}
+
+internal class DeleteTransactionCommandHandler : IRequestHandler<DeleteTransactionCommand>
+{
+    private readonly ITransactionDeleter _deleter;
+    private readonly IUnitOfWork _uow;
+
+    public DeleteTransactionCommandHandler(ITransactionDeleter deleter, IUnitOfWork uow)
     {
-        public string Id { get; init; } = string.Empty;
-        public Day Day { get; init; }
+        _deleter = deleter;
+        _uow = uow;
     }
 
-    internal class DeleteTransactionCommandHandler : IRequestHandler<DeleteTransactionCommand>
+    public async Task<Unit> Handle(DeleteTransactionCommand request, CancellationToken ct)
     {
-        private readonly ITransactionDeleter _deleter;
-        private readonly IUnitOfWork _uow;
-
-        public DeleteTransactionCommandHandler(ITransactionDeleter deleter, IUnitOfWork uow)
-        {
-            _deleter = deleter;
-            _uow = uow;
-        }
-
-        public async Task<Unit> Handle(DeleteTransactionCommand request, CancellationToken ct)
-        {
-            _uow.EnableChangeTracking();
-            await _deleter.DeleteAsync(request, ct);
-            await _uow.SaveChangesAsync(ct);
-            return Unit.Value;
-        }
+        _uow.EnableChangeTracking();
+        await _deleter.DeleteAsync(request, ct);
+        await _uow.SaveChangesAsync(ct);
+        return Unit.Value;
     }
 }

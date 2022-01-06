@@ -5,36 +5,35 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GavinTech.Accounts.Application.Templates
+namespace GavinTech.Accounts.Application.Templates;
+
+public class DeleteTemplateCommand : IRequest
 {
-    public class DeleteTemplateCommand : IRequest
+    public string Id { get; init; } = string.Empty;
+}
+
+internal class DeleteTemplateCommandHandler : IRequestHandler<DeleteTemplateCommand>
+{
+    private readonly IRepository<TransactionTemplate> _templateRepo;
+    private readonly IUnitOfWork _uow;
+
+    public DeleteTemplateCommandHandler(IRepository<TransactionTemplate> templateRepo, IUnitOfWork uow)
     {
-        public string Id { get; init; } = string.Empty;
+        _templateRepo = templateRepo;
+        _uow = uow;
     }
 
-    internal class DeleteTemplateCommandHandler : IRequestHandler<DeleteTemplateCommand>
+    public async Task<Unit> Handle(DeleteTemplateCommand request, CancellationToken ct)
     {
-        private readonly IRepository<TransactionTemplate> _templateRepo;
-        private readonly IUnitOfWork _uow;
+        _uow.EnableChangeTracking();
 
-        public DeleteTemplateCommandHandler(IRepository<TransactionTemplate> templateRepo, IUnitOfWork uow)
-        {
-            _templateRepo = templateRepo;
-            _uow = uow;
-        }
+        var template = await _templateRepo.GetAsync(request.Id, ct)
+            ?? throw new NotFoundException($"Cannot delete non-existent tempate {request.Id}");
 
-        public async Task<Unit> Handle(DeleteTemplateCommand request, CancellationToken ct)
-        {
-            _uow.EnableChangeTracking();
+        _templateRepo.Delete(template);
 
-            var template = await _templateRepo.GetAsync(request.Id, ct)
-                ?? throw new NotFoundException($"Cannot delete non-existent tempate {request.Id}");
+        await _uow.SaveChangesAsync(ct);
 
-            _templateRepo.Delete(template);
-
-            await _uow.SaveChangesAsync(ct);
-
-            return Unit.Value;
-        }
+        return Unit.Value;
     }
 }

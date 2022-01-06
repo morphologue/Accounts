@@ -1,6 +1,12 @@
+# Build artifacts
 bin/
 obj/
+
+# IDEs
 .vs/
 .vscode/
 .idea/
+*.user
+
+# macOS Finder
 .DS_Store

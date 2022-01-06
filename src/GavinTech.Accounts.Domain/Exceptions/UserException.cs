@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace GavinTech.Accounts.Domain.Exceptions
+namespace GavinTech.Accounts.Domain.Exceptions;
+
+public abstract class UserException : Exception
 {
-    public abstract class UserException : Exception
+    protected UserException(string message) : base(message)
     {
-        protected UserException(string message) : base(message)
-        {
-        }
     }
 }

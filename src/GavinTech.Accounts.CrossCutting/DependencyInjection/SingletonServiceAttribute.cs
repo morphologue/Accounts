@@ -1,8 +1,7 @@
 ﻿using System;
-namespace GavinTech.Accounts.CrossCutting.DependencyInjection
+namespace GavinTech.Accounts.CrossCutting.DependencyInjection;
+
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+public sealed class SingletonServiceAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public sealed class SingletonServiceAttribute : Attribute
-    {
-    }
 }

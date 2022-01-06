@@ -10,100 +10,99 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GavinTech.Accounts.Infrastructure.Persistence
+namespace GavinTech.Accounts.Infrastructure.Persistence;
+
+public class Repository<TEntity> : IRepository<TEntity>
+    where TEntity : class, IEntity
 {
-    public class Repository<TEntity> : IRepository<TEntity>
-        where TEntity : class, IEntity
+    private readonly DbSet<TEntity> _dbSet;
+    private readonly AccountsDbContext _dbContext;
+    private readonly Layer.Options _layerOptions;
+    private readonly Func<IUserIdAccessor> _userIdAccessorGetter;
+    private readonly IChangeTrackingFlags _flags;
+    private readonly IEntityIdentifier<TEntity> _identifier;
+
+    public Repository(
+        AccountsDbContext dbContext,
+        Layer.Options layerOptions,
+        Func<IUserIdAccessor> userIdAccessorGetter,
+        IChangeTrackingFlags flags,
+        IEntityIdentifier<TEntity> identifier)
     {
-        private readonly DbSet<TEntity> _dbSet;
-        private readonly AccountsDbContext _dbContext;
-        private readonly Layer.Options _layerOptions;
-        private readonly Func<IUserIdAccessor> _userIdAccessorGetter;
-        private readonly IChangeTrackingFlags _flags;
-        private readonly IEntityIdentifier<TEntity> _identifier;
+        _dbContext = dbContext;
+        _dbSet = dbContext.Set<TEntity>();
+        _layerOptions = layerOptions;
+        _userIdAccessorGetter = userIdAccessorGetter;
+        _flags = flags;
+        _identifier = identifier;
+    }
 
-        public Repository(
-            AccountsDbContext dbContext,
-            Layer.Options layerOptions,
-            Func<IUserIdAccessor> userIdAccessorGetter,
-            IChangeTrackingFlags flags,
-            IEntityIdentifier<TEntity> identifier)
+    public Task<List<TEntity>> GetAsync(CancellationToken ct) =>
+        GetCommonAsync(null, ct);
+
+    public async Task<TEntity?> GetAsync(string id, CancellationToken ct) =>
+        (await GetCommonAsync(_identifier.MakePredicate(id), ct)).FirstOrDefault();
+
+    public string Identify(TEntity entity) =>
+        _identifier.Identify(entity);
+
+    public void Add(TEntity entity)
+    {
+        RequireChangeTracking();
+        _dbSet.Add(entity);
+        if (_layerOptions.IsMultiUser)
         {
-            _dbContext = dbContext;
-            _dbSet = dbContext.Set<TEntity>();
-            _layerOptions = layerOptions;
-            _userIdAccessorGetter = userIdAccessorGetter;
-            _flags = flags;
-            _identifier = identifier;
+            var userId = _userIdAccessorGetter().UserId;
+            _dbContext.Entry(entity).Property(Constants.UserIdColumnName).CurrentValue = userId;
+        }
+    }
+
+    public void Delete(TEntity entity)
+    {
+        RequireChangeTracking();
+        _dbSet.Remove(entity);
+    }
+
+    public void Delete(IEnumerable<TEntity> entities)
+    {
+        RequireChangeTracking();
+        _dbSet.RemoveRange(entities);
+    }
+
+    private void RequireChangeTracking()
+    {
+        if (!_flags.IsChangeTrackingEnabled)
+        {
+            throw new InvalidOperationException("Mutation attempted while change tracking disabled");
+        }
+    }
+
+    private Task<List<TEntity>> GetCommonAsync(Expression<Func<TEntity, bool>>? predicate, CancellationToken ct)
+    {
+        IQueryable<TEntity> query = _dbSet;
+
+        if (!_flags.IsChangeTrackingEnabled)
+        {
+            query = query.AsNoTracking();
         }
 
-        public Task<List<TEntity>> GetAsync(CancellationToken ct) =>
-            GetCommonAsync(null, ct);
-
-        public async Task<TEntity?> GetAsync(string id, CancellationToken ct) =>
-            (await GetCommonAsync(_identifier.MakePredicate(id), ct)).FirstOrDefault();
-
-        public string Identify(TEntity entity) =>
-            _identifier.Identify(entity);
-
-        public void Add(TEntity entity)
+        // Include one level of navigation properties.
+        foreach (var property in _dbSet.EntityType.GetNavigations())
         {
-            RequireChangeTracking();
-            _dbSet.Add(entity);
-            if (_layerOptions.IsMultiUser)
-            {
-                var userId = _userIdAccessorGetter().UserId;
-                _dbContext.Entry(entity).Property(Constants.UserIdColumnName).CurrentValue = userId;
-            }
+            query = query.Include(property.Name);
         }
 
-        public void Delete(TEntity entity)
+        if (_layerOptions.IsMultiUser)
         {
-            RequireChangeTracking();
-            _dbSet.Remove(entity);
+            var userId = _userIdAccessorGetter().UserId;
+            query = query.Where(row => EF.Property<Guid>(row, Constants.UserIdColumnName) == userId);
         }
 
-        public void Delete(IEnumerable<TEntity> entities)
+        if (predicate != null)
         {
-            RequireChangeTracking();
-            _dbSet.RemoveRange(entities);
+            query = query.Where(predicate);
         }
 
-        private void RequireChangeTracking()
-        {
-            if (!_flags.IsChangeTrackingEnabled)
-            {
-                throw new InvalidOperationException("Mutation attempted while change tracking disabled");
-            }
-        }
-
-        private Task<List<TEntity>> GetCommonAsync(Expression<Func<TEntity, bool>>? predicate, CancellationToken ct)
-        {
-            IQueryable<TEntity> query = _dbSet;
-
-            if (!_flags.IsChangeTrackingEnabled)
-            {
-                query = query.AsNoTracking();
-            }
-
-            // Include one level of navigation properties.
-            foreach (var property in _dbSet.EntityType.GetNavigations())
-            {
-                query = query.Include(property.Name);
-            }
-
-            if (_layerOptions.IsMultiUser)
-            {
-                var userId = _userIdAccessorGetter().UserId;
-                query = query.Where(row => EF.Property<Guid>(row, Constants.UserIdColumnName) == userId);
-            }
-
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return query.ToListAsync(ct);
-        }
+        return query.ToListAsync(ct);
     }
 }
