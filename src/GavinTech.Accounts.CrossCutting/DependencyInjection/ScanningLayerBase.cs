@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GavinTech.Accounts.CrossCutting.DependencyInjection;
@@ -18,5 +19,5 @@ public abstract class ScanningLayerBase : ILayer
             .AsImplementedInterfaces().WithScopedLifetime());
     }
 
-    public virtual Task InitialiseAsync(IServiceProvider scopedProvider) => Task.CompletedTask;
+    public virtual Task InitialiseAsync(IServiceProvider scopedProvider, CancellationToken ct) => Task.CompletedTask;
 }

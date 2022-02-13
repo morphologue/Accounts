@@ -6,6 +6,8 @@ using GavinTech.Accounts.Infrastructure.Persistence.EntityIdentification;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GavinTech.Accounts.Infrastructure;
@@ -15,6 +17,7 @@ public class Layer : ScanningLayerBase
     public class Options
     {
         public bool IsMultiUser { get; set; }
+        public string? DatabasePath { get; set; }
     }
 
     private readonly Options _options;
@@ -28,7 +31,7 @@ public class Layer : ScanningLayerBase
         services.AddSingleton(_options);
 
         services.AddDbContext<AccountsDbContext>(dbContextOptions =>
-            dbContextOptions.UseSqlite("Data Source=accounts.db", sqliteOptions =>
+            dbContextOptions.UseSqlite($"Data Source={ResolveDatabasePath()}", sqliteOptions =>
                 sqliteOptions.MigrationsAssembly("GavinTech.Accounts.Migrations.Sqlite")));
 
         services.AddScoped(typeof(IEntityIdentifier<>), typeof(DefaultEntityIdentifier<>));
@@ -41,16 +44,39 @@ public class Layer : ScanningLayerBase
             () => provider.GetRequiredService<IUserIdAccessor>());
     }
 
-    public override async Task InitialiseAsync(IServiceProvider scopedProvider)
+    public override async Task InitialiseAsync(IServiceProvider scopedProvider, CancellationToken ct)
     {
         var dbContext = scopedProvider.GetRequiredService<AccountsDbContext>();
-        await dbContext.Database.MigrateAsync();
+        await dbContext.Database.MigrateAsync(ct);
 
-        if (!await dbContext.Accounts.AnyAsync())
+        if (!await dbContext.Accounts.AnyAsync(ct))
         {
             // Create the root account.
             dbContext.Accounts.Add(new());
-            await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync(ct);
         }
+    }
+
+    private string ResolveDatabasePath()
+    {
+        if (_options.DatabasePath == null)
+        {
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "morphologue", "accounts");
+            Directory.CreateDirectory(dir);
+            return Path.Combine(dir, "accounts.db");
+        }
+
+        if (_options.DatabasePath.Contains(';'))
+        {
+            throw new FileNotFoundException("The database file name contains an illegal character");
+        }
+
+        if (!File.Exists(_options.DatabasePath))
+        {
+            throw new FileNotFoundException("The specified database does not exist");
+        }
+
+        return _options.DatabasePath;
     }
 }
