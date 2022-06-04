@@ -14,7 +14,7 @@ internal class ChangeTransactionLineCommand : LineCommandBase
 {
     public ChangeLineCommand Parent { get; set; } = null!;
 
-    [Argument(0, Description = "ID of the transaction template to change")]
+    [Argument(0, Description = "ID of the transaction to change")]
     [Required]
     public string Id { get; set; } = string.Empty;
 

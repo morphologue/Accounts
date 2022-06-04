@@ -22,13 +22,15 @@ public struct Day : IEquatable<Day>, IComparable, IComparable<Day>
 
     public Day(int offset) => Offset = offset;
     public Day(DateTime dateTime) => Offset = (dateTime - Epoch).Days;
+
     public Day(string dayString) : this(DateTime.ParseExact(
         dayString,
         OneFormatToRuleThemAll,
         CultureInfo.InvariantCulture,
         DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal
     ))
-    { }
+    {
+    }
 
     // Equality
     public override bool Equals(object? other) => Offset.Equals(ExtractOffset(other));

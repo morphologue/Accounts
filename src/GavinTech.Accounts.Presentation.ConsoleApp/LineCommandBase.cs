@@ -22,7 +22,22 @@ internal abstract class LineCommandBase
     }
 
     /// <summary>Fulfill a command by sending a request into MediatR.</summary>
-    protected static async Task<int> MediateAsync(IRequest request, RootLineCommand root, CancellationToken ct)
+    protected static Task<int> MediateAsync(IRequest request, RootLineCommand root, CancellationToken ct) =>
+        MediateAsync<IRequest, object>(request, null, root, ct);
+
+    /// <summary>Fulfill a command by sending a request into MediatR and optionally handling the response.</summary>
+    protected static Task<int> MediateAsync<TResponse>(
+        IRequest<TResponse> request,
+        Action<TResponse>? callback,
+        RootLineCommand root,
+        CancellationToken ct) => MediateAsync<IRequest<TResponse>, TResponse>(request, callback, root, ct);
+
+    protected static async Task<int> MediateAsync<TRequest, TResponse>(
+        TRequest request,
+        Action<TResponse>? callback,
+        RootLineCommand root,
+        CancellationToken ct)
+        where TRequest : IBaseRequest
     {
         var infraOptions = new Infrastructure.Layer.Options
         {
@@ -39,7 +54,8 @@ internal abstract class LineCommandBase
         var mediatr = scope.ServiceProvider.GetRequiredService<IMediator>();
         try
         {
-            await mediatr.Send(request, ct);
+            var response = await mediatr.Send(request, ct);
+            callback?.Invoke((TResponse?)response ?? throw new InvalidOperationException("Queries may not return null"));
         }
         catch (Exception ex)
         {
