@@ -40,7 +40,7 @@ internal class CreateAccountCommandHandler : IRequestHandler<CreateAccountComman
             throw new ForbiddenException($"An account called '{request.Name}' already exists");
         }
 
-        var parent = accounts.FirstOrDefault(a => request.Parent == null ? a.Parent == null : a.Name == request.Parent)
+        var parent = accounts.FirstOrDefault(request.Parent == null ? a => a.Parent == null : a => a.Name == request.Parent)
             ?? throw new NotFoundException($"Parent account '{request.Parent}' could not be found");
 
         _accountRepo.Add(new()

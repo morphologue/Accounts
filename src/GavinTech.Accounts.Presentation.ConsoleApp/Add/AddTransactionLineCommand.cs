@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using GavinTech.Accounts.Application.Templates;
-using GavinTech.Accounts.Domain.Entities;
 using GavinTech.Accounts.Domain.Primitives;
 using McMaster.Extensions.CommandLineUtils;
 
@@ -15,11 +14,11 @@ internal class AddTransactionLineCommand : LineCommandBase
     public AddLineCommand Parent { get; set; } = null!;
 
     [Option("-a|--account", Description = "Account (root by default)")]
-    public string AccountName { get; set; } = Account.RootAccountName;
+    public string? AccountName { get; set; }
 
     [Option("-y|--date", Description = "Transaction date YYYY-MM-DD (today by default)")]
     [RegularExpression(Regexen.Day)]
-    public string Date { get; set; } = DateTime.Now.ToString(Day.OneFormatToRuleThemAll);
+    public string Date { get; set; } = DateTime.UtcNow.ToString(Day.OneFormatToRuleThemAll);
 
     [Option("-d|--desc|--description", Description = "Description (blank by default)")]
     public string Description { get; set; } = string.Empty;
@@ -29,6 +28,7 @@ internal class AddTransactionLineCommand : LineCommandBase
     public string? Recurrence { get; set; }
 
     [Option("--until", Description = "End recurrence before YYYY-MM-DD")]
+    [RegularExpression(Regexen.Day)]
     public string? Until { get; set; }
 
     [Argument(0, Description = "Amount")]

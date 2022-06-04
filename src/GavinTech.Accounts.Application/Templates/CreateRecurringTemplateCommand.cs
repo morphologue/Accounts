@@ -4,9 +4,9 @@ using MediatR;
 
 namespace GavinTech.Accounts.Application.Templates;
 
-public class CreateRecurringTemplateCommand : IRequest, ITemplateCreationRequest, IRecurringTemplateCreationRequest
+public class CreateRecurringTemplateCommand : IRequest, IRecurringTemplateCreationRequest
 {
-    public string AccountName { get; init; } = string.Empty;
+    public string? AccountName { get; init; }
     public Day Day { get; init; }
     public Amount Amount { get; init; }
     public string Description { get; init; } = string.Empty;

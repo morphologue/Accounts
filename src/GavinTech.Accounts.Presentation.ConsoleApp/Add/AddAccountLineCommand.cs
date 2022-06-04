@@ -11,7 +11,7 @@ internal class AddAccountLineCommand : LineCommandBase
 {
     public AddLineCommand Parent { get; set; } = null!;
 
-    [Option("-p|--parent", Description = "The parent account when creating a sub-account")]
+    [Option("-p|--parent", Description = "The parent account when creating a sub-account (default root)")]
     public string? ParentAccountName { get; set; }
 
     [Argument(0, Description = "Name of the account to add", Name = "Name")]

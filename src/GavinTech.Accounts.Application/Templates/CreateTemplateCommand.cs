@@ -8,7 +8,7 @@ namespace GavinTech.Accounts.Application.Templates;
 
 public class CreateTemplateCommand : IRequest, ITemplateCreationRequest
 {
-    public string AccountName { get; init; } = string.Empty;
+    public string? AccountName { get; init; }
     public Day Day { get; init; }
     public Amount Amount { get; init; }
     public string Description { get; init; } = string.Empty;

@@ -30,7 +30,7 @@ internal abstract class RecurringTemplateCreationCommandBase<T> : IRequestHandle
         _writerMethod = writerMethod;
     }
 
-    public async Task<Unit> Handle(T request, CancellationToken ct)
+    public virtual async Task<Unit> Handle(T request, CancellationToken ct)
     {
         await _writerMethod(request, ct, template => Extend(request, template));
         return Unit.Value;

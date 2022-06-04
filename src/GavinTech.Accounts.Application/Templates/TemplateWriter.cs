@@ -5,6 +5,7 @@ using GavinTech.Accounts.Domain.Exceptions;
 using GavinTech.Accounts.Domain.Primitives;
 using GavinTech.Accounts.Domain.Utilities;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ internal interface ITemplateWriter<T>
 
 internal interface ITemplateCreationRequest
 {
-    string AccountName { get; }
+    string? AccountName { get; }
     Day Day { get; }
     Amount Amount { get; }
     string Description { get; }
@@ -70,7 +71,10 @@ internal class TemplateWriter<T> : ITemplateWriter<T>
         {
             throw new BadRequestException($"{nameof(request.Description)} cannot be null");
         }
-        var account = await _accountRepo.GetAsync(request.AccountName, ct)
+
+        var account = (request.AccountName == null
+                ? (await _accountRepo.GetAsync(ct)).FirstOrDefault(a => a.Parent == null)
+                : await _accountRepo.GetAsync(request.AccountName, ct))
             ?? throw new NotFoundException($"Cannot find account '{request.AccountName}'");
 
         var creature = new T
@@ -84,6 +88,7 @@ internal class TemplateWriter<T> : ITemplateWriter<T>
         {
             await extender(creature);
         }
+
         _templateRepo.Add(creature);
 
         await _uow.SaveChangesAsync(ct);
@@ -138,6 +143,7 @@ internal class TemplateWriter<T> : ITemplateWriter<T>
             {
                 await extender(template);
             }
+
             await _deleter.DeleteAsync(request, ct);
         });
     }

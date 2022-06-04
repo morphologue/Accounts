@@ -79,13 +79,13 @@ internal class UpdateAccountCommandHandler : IRequestHandler<UpdateAccountComman
         account.Name = target;
     }
 
-    private void UpdateParent(IReadOnlyCollection<Account> accounts, Account account, string target)
+    private void UpdateParent(IReadOnlyCollection<Account> accounts, Account account, string? target)
     {
-        if (target == account.Parent?.Name)
+        if (target == account.Name || (target == null && account.Parent == null))
         {
             throw new BadRequestException($"The parent of account '{account.Name}' cannot be updated to itself");
         }
-        var parent = accounts.FirstOrDefault(a => a.Name == target)
+        var parent = accounts.FirstOrDefault(target == null ? a => a.Parent == null : a => a.Name == target)
             ?? throw new NotFoundException($"Parent account '{target}' cannot be found");
 
         var subNames = accounts

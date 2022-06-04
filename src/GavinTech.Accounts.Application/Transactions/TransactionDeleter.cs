@@ -19,6 +19,7 @@ internal interface ITransactionDeletionRequest
 {
     string Id { get; }
     Day Day { get; }
+    bool EndRecurrence { get; }
 }
 
 [ScopedService]
@@ -49,5 +50,10 @@ internal class TransactionDeleter : ITransactionDeleter
         }
 
         template.Tombstones.Add(request.Day);
+
+        if (request.EndRecurrence)
+        {
+            template.UntilExcl = request.Day;
+        }
     }
 }

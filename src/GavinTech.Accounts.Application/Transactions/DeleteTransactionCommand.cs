@@ -10,6 +10,7 @@ public class DeleteTransactionCommand : IRequest, ITransactionDeletionRequest
 {
     public string Id { get; init; } = string.Empty;
     public Day Day { get; init; }
+    public bool EndRecurrence { get; init; }
 }
 
 internal class DeleteTransactionCommandHandler : IRequestHandler<DeleteTransactionCommand>
