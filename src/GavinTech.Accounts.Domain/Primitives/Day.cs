@@ -15,7 +15,7 @@ public struct Day : IEquatable<Day>, IComparable, IComparable<Day>
     public static bool operator >(Day lhs, Day rhs) => lhs.Offset > rhs.Offset;
     public static bool operator <=(Day lhs, Day rhs) => lhs.Offset <= rhs.Offset;
     public static bool operator >=(Day lhs, Day rhs) => lhs.Offset >= rhs.Offset;
-    public static Day operator ++(Day day) => new(day.Offset + 1);
+    public static Day operator +(Day day, int addend) => new(day.Offset + addend);
 
     // The sole instance member
     public int Offset { get; }
@@ -29,8 +29,7 @@ public struct Day : IEquatable<Day>, IComparable, IComparable<Day>
         CultureInfo.InvariantCulture,
         DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal
     ))
-    {
-    }
+    { }
 
     // Equality
     public override bool Equals(object? other) => Offset.Equals(ExtractOffset(other));

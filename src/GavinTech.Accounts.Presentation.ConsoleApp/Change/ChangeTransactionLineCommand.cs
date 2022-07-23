@@ -32,7 +32,7 @@ internal class ChangeTransactionLineCommand : LineCommandBase
     [Option("-d|--desc|--description", Description = "Description")]
     public string? Description { get; set; }
 
-    [Option("-r|--recurring", Description = "Repeat, e.g. '1m' (monthly) or '14d' (fortnightly)")]
+    [Option("-r|--recur|--recurring", Description = "Repeat, e.g. '1m' (monthly) or '14d' (fortnightly)")]
     [RegularExpression(Regexen.Recurrence)]
     public string? Recurrence { get; set; }
 
@@ -44,26 +44,21 @@ internal class ChangeTransactionLineCommand : LineCommandBase
         Recurrence == null && Until == null ? ExecuteOneOffAsync(ct) : ExecuteRecurringAsync(ct);
 
     private async Task<int> ExecuteOneOffAsync(CancellationToken ct) =>
-        await MediateAsync(new UpdateTemplateCommand
-        {
+        await MediateAsync(new UpdateTemplateCommand {
             Id = Id,
-            AccountName = new PatchBox<string>
-            {
+            AccountName = new PatchBox<string> {
                 IsSpecified = AccountName != null,
                 Value = AccountName ?? string.Empty
             },
-            Amount = new PatchBox<Amount>
-            {
+            Amount = new PatchBox<Amount> {
                 IsSpecified = Amount != null,
                 Value = Amount == null ? new Amount() : Parsers.ParseAmount(Amount)
             },
-            Day = new PatchBox<Day>
-            {
+            Day = new PatchBox<Day> {
                 IsSpecified = Date != null,
                 Value = Date == null ? new Day() : new Day(Date)
             },
-            Description = new PatchBox<string>
-            {
+            Description = new PatchBox<string> {
                 IsSpecified = Description != null,
                 Value = Description ?? string.Empty
             }
@@ -72,41 +67,33 @@ internal class ChangeTransactionLineCommand : LineCommandBase
     private async Task<int> ExecuteRecurringAsync(CancellationToken ct)
     {
         var parsed = Recurrence == null ? null : Parsers.ParseRecurrence(Recurrence);
-        return await MediateAsync(new UpdateRecurringTemplateCommand
-        {
+        return await MediateAsync(new UpdateRecurringTemplateCommand {
             Id = Id,
-            AccountName = new PatchBox<string>
-            {
+            AccountName = new PatchBox<string> {
                 IsSpecified = AccountName != null,
                 Value = AccountName ?? string.Empty
             },
-            Amount = new PatchBox<Amount>
-            {
+            Amount = new PatchBox<Amount> {
                 IsSpecified = Amount != null,
                 Value = Amount == null ? new Amount() : Parsers.ParseAmount(Amount)
             },
-            Day = new PatchBox<Day>
-            {
+            Day = new PatchBox<Day> {
                 IsSpecified = Date != null,
                 Value = Date == null ? new Day() : new Day(Date)
             },
-            Description = new PatchBox<string>
-            {
+            Description = new PatchBox<string> {
                 IsSpecified = Description != null,
                 Value = Description ?? string.Empty
             },
-            Basis = new PatchBox<RecurrenceBasis>
-            {
+            Basis = new PatchBox<RecurrenceBasis> {
                 IsSpecified = Recurrence != null,
                 Value = parsed?.Item1 ?? default
             },
-            Multiplicand = new PatchBox<uint>
-            {
+            Multiplicand = new PatchBox<uint> {
                 IsSpecified = Recurrence != null,
                 Value = parsed?.Item2 ?? default
             },
-            UntilExcl = new PatchBox<Day?>
-            {
+            UntilExcl = new PatchBox<Day?> {
                 IsSpecified = Until != null,
                 Value = Until is null or "never" ? null : new Day(Until)
             }

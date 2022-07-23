@@ -11,7 +11,7 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace GavinTech.Accounts.Presentation.ConsoleApp;
 
-[Command("dotnet GavinTech.Accounts.Presentation.ConsoleApp.dll")]
+[Command("accounts")]
 [VersionOption("Accounts 1.0.0")]
 [Subcommand(typeof(AddLineCommand),
     typeof(ChangeLineCommand),

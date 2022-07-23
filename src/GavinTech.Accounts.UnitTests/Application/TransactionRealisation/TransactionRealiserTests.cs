@@ -1,11 +1,11 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using FluentAssertions;
 using GavinTech.Accounts.Application.Interfaces.Persistence;
 using GavinTech.Accounts.Application.Transactions;
 using GavinTech.Accounts.Domain.Entities;
 using GavinTech.Accounts.Domain.Primitives;
 using Moq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace GavinTech.Accounts.UnitTests.Application.TransactionRealisation;
@@ -36,20 +36,17 @@ public class TransactionRealiserTests
     [Fact]
     public async Task RealiseAsync_YieldsRecurringTransactionsFirst()
     {
-        _accounts.Add(new()
-        {
+        _accounts.Add(new() {
             Name = "Root"
         });
         _templates.AddRange(new[] {
-            new TransactionTemplate
-            {
+            new TransactionTemplate {
                 Day = new Day(114),
                 Amount = new Amount(12001),
                 Description = "Non-recurring",
                 Account = _accounts[0]
             },
-            new RecurringTransactionTemplate
-            {
+            new RecurringTransactionTemplate {
                 Day = new Day(100),
                 Amount = new Amount(12002),
                 Description = "Fortnightly",
@@ -62,32 +59,28 @@ public class TransactionRealiserTests
         var result = await _patient.RealiseAsync(null, new Day(129), "Root", default);
 
         result.Should().BeEquivalentTo(new[] {
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(100),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "Fortnightly",
                 AccountId = "Root"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(114),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(24004),
                 Description = "Fortnightly",
                 AccountId = "Root"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(114),
                 Amount = new Amount(12001),
                 RunningTotal = new Amount(36005),
                 Description = "Non-recurring",
                 AccountId = "Root"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(128),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(48007),
@@ -100,57 +93,47 @@ public class TransactionRealiserTests
     [Fact]
     public async Task RealiseAsync_IncludesChildrenOrderedByAmountThenName()
     {
-        _accounts.AddRange(new[]
-        {
-            new Account
-            {
+        _accounts.AddRange(new[] {
+            new Account {
                 Name = "Child"
             },
-            new Account
-            {
+            new Account {
                 Name = "Root"
             },
-            new Account
-            {
+            new Account {
                 Name = "Parent2"
             },
-            new Account
-            {
+            new Account {
                 Name = "Parent1"
             },
         });
         _accounts[0].Parent = _accounts[3];
         _templates.AddRange(new[] {
-            new TransactionTemplate
-            {
+            new TransactionTemplate {
                 Day = new Day(100),
                 Amount = new Amount(12001),
                 Description = "Child template",
                 Account = _accounts[0]
             },
-            new TransactionTemplate
-            {
+            new TransactionTemplate {
                 Day = new Day(100),
                 Amount = new Amount(12001),
                 Description = "Parent2 template",
                 Account = _accounts[2]
             },
-            new TransactionTemplate
-            {
+            new TransactionTemplate {
                 Day = new Day(100),
                 Amount = new Amount(12000),
                 Description = "Parent1 lesser amount",
                 Account = _accounts[3]
             },
-            new TransactionTemplate
-            {
+            new TransactionTemplate {
                 Day = new Day(100),
                 Amount = new Amount(12001),
                 Description = "Parent1 equal amount",
                 Account = _accounts[3]
             },
-            new TransactionTemplate
-            {
+            new TransactionTemplate {
                 Day = new Day(100),
                 Amount = new Amount(12001),
                 Description = "Root template",
@@ -161,24 +144,21 @@ public class TransactionRealiserTests
         var result = await _patient.RealiseAsync(null, new Day(101), "Parent1", default);
 
         result.Should().BeEquivalentTo(new[] {
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(100),
                 Amount = new Amount(12000),
                 RunningTotal = new Amount(12000),
                 Description = "Parent1 lesser amount",
                 AccountId = "Parent1"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(100),
                 Amount = new Amount(12001),
                 RunningTotal = new Amount(24001),
                 Description = "Child template",
                 AccountId = "Child"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(100),
                 Amount = new Amount(12001),
                 RunningTotal = new Amount(36002),
@@ -191,20 +171,17 @@ public class TransactionRealiserTests
     [Fact]
     public async Task RealiseAsync_StartsAtStartDate()
     {
-        _accounts.Add(new()
-        {
+        _accounts.Add(new() {
             Name = "Root"
         });
         _templates.AddRange(new[] {
-            new TransactionTemplate
-            {
+            new TransactionTemplate {
                 Day = new Day(114),
                 Amount = new Amount(12001),
                 Description = "Non-recurring",
                 Account = _accounts[0]
             },
-            new RecurringTransactionTemplate
-            {
+            new RecurringTransactionTemplate {
                 Day = new Day(86),
                 Amount = new Amount(12002),
                 Description = "Fortnightly",
@@ -217,27 +194,24 @@ public class TransactionRealiserTests
         var result = await _patient.RealiseAsync(new Day(114), new Day(129), null, default);
 
         result.Should().BeEquivalentTo(new[] {
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(114),
                 Amount = new Amount(12002),
-                RunningTotal = new Amount(12002),
+                RunningTotal = new Amount(36006),
                 Description = "Fortnightly",
                 AccountId = "Root"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(114),
                 Amount = new Amount(12001),
-                RunningTotal = new Amount(24003),
+                RunningTotal = new Amount(48007),
                 Description = "Non-recurring",
                 AccountId = "Root"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(128),
                 Amount = new Amount(12002),
-                RunningTotal = new Amount(36005),
+                RunningTotal = new Amount(60009),
                 Description = "Fortnightly",
                 AccountId = "Root"
             }
@@ -248,17 +222,14 @@ public class TransactionRealiserTests
     public async Task RealiseAsync_RespectsHierarchicalClosure()
     {
         _accounts.AddRange(new[] {
-            new Account
-            {
+            new Account {
                 Name = "Root"
             },
-            new Account
-            {
+            new Account {
                 Name = "LateClosingParent",
                 ClosedAfter = new Day("2021-04-15")
             },
-            new Account
-            {
+            new Account {
                 Name = "EarlyClosingChild",
                 ClosedAfter = new Day("2021-03-31")
             }
@@ -266,15 +237,13 @@ public class TransactionRealiserTests
         _accounts[1].Parent = _accounts[0];
         _accounts[2].Parent = _accounts[1];
         _templates.AddRange(new[] {
-            new TransactionTemplate
-            {
+            new TransactionTemplate {
                 Day = new Day("2021-04-16"),
                 Amount = new Amount(12001),
                 Description = "Invisible",
                 Account = _accounts[1]
             },
-            new RecurringTransactionTemplate
-            {
+            new RecurringTransactionTemplate {
                 Day = new Day("2021-03-15"),
                 Amount = new Amount(12002),
                 Description = "LateClosingParent template",
@@ -282,8 +251,7 @@ public class TransactionRealiserTests
                 Basis = RecurrenceBasis.Monthly,
                 Multiplicand = 1
             },
-            new RecurringTransactionTemplate
-            {
+            new RecurringTransactionTemplate {
                 Day = new Day("2021-03-15"),
                 Amount = new Amount(12002),
                 Description = "EarlyClosingChild template",
@@ -296,24 +264,21 @@ public class TransactionRealiserTests
         var result = await _patient.RealiseAsync(null, new Day("2021-12-31"), null, default);
 
         result.Should().BeEquivalentTo(new[] {
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-03-15"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "EarlyClosingChild template",
                 AccountId = "EarlyClosingChild"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-03-15"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(24004),
                 Description = "LateClosingParent template",
                 AccountId = "LateClosingParent"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-04-15"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(36006),
@@ -327,57 +292,50 @@ public class TransactionRealiserTests
     public async Task RealiseAsync_SkipsTombstones()
     {
         _accounts.AddRange(new[] {
-            new Account
-            {
+            new Account {
                 Name = "Root"
             },
-            new Account
-            {
+            new Account {
                 Name = "Account"
             }
         });
         _accounts[1].Parent = _accounts[0];
         _templates.AddRange(new[] {
-            new TransactionTemplate
-            {
+            new TransactionTemplate {
                 Day = new Day("2021-04-30"),
                 Amount = new Amount(12001),
                 Description = "Non-recurring",
                 Account = _accounts[1]
             },
-            new RecurringTransactionTemplate
-            {
+            new RecurringTransactionTemplate {
                 Day = new Day("2021-03-31"),
                 Amount = new Amount(12002),
                 Description = "Monthly",
                 Account = _accounts[1],
                 Basis = RecurrenceBasis.Monthly,
                 Multiplicand = 1,
-                Tombstones = { new Day("2021-04-30") }
+                Tombstones = {new Day("2021-04-30")}
             }
         });
 
         var result = await _patient.RealiseAsync(new Day("2021-03-01"), new Day("2021-06-01"), null, default);
 
         result.Should().BeEquivalentTo(new[] {
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-03-31"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "Monthly",
                 AccountId = "Account"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-04-30"),
                 Amount = new Amount(12001),
                 RunningTotal = new Amount(24003),
                 Description = "Non-recurring",
                 AccountId = "Account"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-05-31"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(36005),
@@ -390,13 +348,11 @@ public class TransactionRealiserTests
     [Fact]
     public async Task RealiseAsync_EndsRecurrenceBeforeUntilExcl()
     {
-        _accounts.Add(new()
-        {
+        _accounts.Add(new() {
             Name = "Root"
         });
         _templates.AddRange(new[] {
-            new RecurringTransactionTemplate
-            {
+            new RecurringTransactionTemplate {
                 Day = new Day(100),
                 Amount = new Amount(12002),
                 Description = "Fortnightly",
@@ -410,16 +366,14 @@ public class TransactionRealiserTests
         var result = await _patient.RealiseAsync(null, new Day(129), null, default);
 
         result.Should().BeEquivalentTo(new[] {
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(100),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "Fortnightly",
                 AccountId = "Root"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day(114),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(24004),
@@ -433,14 +387,12 @@ public class TransactionRealiserTests
     public async Task RealiseAsync_UnsticksFromEndOfMonth_GivenRecurrenceFrom28Jan()
     {
         _accounts.AddRange(new[] {
-            new Account
-            {
+            new Account {
                 Name = "Root"
             }
         });
         _templates.AddRange(new[] {
-            new RecurringTransactionTemplate
-            {
+            new RecurringTransactionTemplate {
                 Day = new Day("2021-01-28"),
                 Amount = new Amount(12002),
                 Description = "Monthly",
@@ -453,24 +405,21 @@ public class TransactionRealiserTests
         var result = await _patient.RealiseAsync(new Day("2021-01-01"), new Day("2021-03-29"), null, default);
 
         result.Should().BeEquivalentTo(new[] {
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-01-28"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "Monthly",
                 AccountId = "Root"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-02-28"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(24004),
                 Description = "Monthly",
                 AccountId = "Root"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-03-28"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(36006),
@@ -484,14 +433,12 @@ public class TransactionRealiserTests
     public async Task RealiseAsync_SticksToEndOfMonth_GivenRecurrenceFrom28Feb()
     {
         _accounts.AddRange(new[] {
-            new Account
-            {
+            new Account {
                 Name = "Root"
             }
         });
         _templates.AddRange(new[] {
-            new RecurringTransactionTemplate
-            {
+            new RecurringTransactionTemplate {
                 Day = new Day("2021-02-28"),
                 Amount = new Amount(12002),
                 Description = "Monthly",
@@ -504,24 +451,21 @@ public class TransactionRealiserTests
         var result = await _patient.RealiseAsync(new Day("2021-02-01"), new Day("2021-05-01"), null, default);
 
         result.Should().BeEquivalentTo(new[] {
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-02-28"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "Monthly",
                 AccountId = "Root"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-03-31"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(24004),
                 Description = "Monthly",
                 AccountId = "Root"
             },
-            new Transaction
-            {
+            new Transaction {
                 Day = new Day("2021-04-30"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(36006),

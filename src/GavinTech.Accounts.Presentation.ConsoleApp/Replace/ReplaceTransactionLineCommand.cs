@@ -36,7 +36,7 @@ internal class ReplaceTransactionLineCommand : LineCommandBase
     [Option("-d|--desc|--description", Description = "Description (blank by default)")]
     public string Description { get; set; } = string.Empty;
 
-    [Option("-r|--recurring", Description = "Repeat, e.g. '1m' (monthly) or '14d' (fortnightly)")]
+    [Option("-r|--recur|--recurring", Description = "Repeat, e.g. '1m' (monthly) or '14d' (fortnightly)")]
     [RegularExpression(Regexen.Recurrence)]
     public string? Recurrence { get; set; }
 
@@ -60,8 +60,7 @@ internal class ReplaceTransactionLineCommand : LineCommandBase
 
     private async Task<int> ExecuteOneOff(CancellationToken ct) =>
         await MediateAsync(
-            new SpliceTemplateCommand
-            {
+            new SpliceTemplateCommand {
                 Id = Id,
                 AccountName = AccountName,
                 Day = new Day(Date),
@@ -74,8 +73,7 @@ internal class ReplaceTransactionLineCommand : LineCommandBase
     {
         var (basis, multiplicand) = Parsers.ParseRecurrence(Recurrence ?? throw new InvalidOperationException());
         return await MediateAsync(
-            new SpliceRecurringTemplateCommand
-            {
+            new SpliceRecurringTemplateCommand {
                 Id = Id,
                 AccountName = AccountName,
                 Day = new Day(Date),

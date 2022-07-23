@@ -1,11 +1,11 @@
-﻿using GavinTech.Accounts.Application.Interfaces.Persistence;
+﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using GavinTech.Accounts.Application.Interfaces.Persistence;
 using GavinTech.Accounts.CrossCutting.DependencyInjection;
 using GavinTech.Accounts.Domain.Entities;
 using GavinTech.Accounts.Domain.Exceptions;
 using GavinTech.Accounts.Domain.Primitives;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace GavinTech.Accounts.Application.Transactions;
 
@@ -42,7 +42,7 @@ internal class TransactionDeleter : ITransactionDeleter
             ?? throw new NotFoundException(
                 $"Cannot suppress transaction of non-existent recurring template {request.Id}");
 
-        var realisation = await _realiser.RealiseAsync(request.Day, request.Day, null, ct);
+        var realisation = await _realiser.RealiseAsync(request.Day, request.Day + 1, null, ct);
         if (realisation.All(t => t.TemplateId != request.Id))
         {
             throw new BadRequestException($"Cannot suppress transaction of recurring template {request.Id} which "

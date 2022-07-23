@@ -31,7 +31,6 @@ internal class ListAccountsLineCommand : LineCommandBase
         {
             Console.Write($" (closed after {account.ClosedAfter})");
         }
-
         Console.WriteLine();
 
         foreach (var child in accounts.Where(a => a.Parent?.Name == account.Name).OrderBy(a => a.Name))

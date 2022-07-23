@@ -1,13 +1,13 @@
-﻿using GavinTech.Accounts.Application.Interfaces.Persistence;
-using GavinTech.Accounts.CrossCutting.DependencyInjection;
-using GavinTech.Accounts.Domain.Entities;
-using GavinTech.Accounts.Domain.Extensions;
-using GavinTech.Accounts.Domain.Primitives;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GavinTech.Accounts.Application.Interfaces.Persistence;
+using GavinTech.Accounts.CrossCutting.DependencyInjection;
+using GavinTech.Accounts.Domain.Entities;
+using GavinTech.Accounts.Domain.Extensions;
+using GavinTech.Accounts.Domain.Primitives;
 
 namespace GavinTech.Accounts.Application.Transactions;
 
@@ -15,7 +15,7 @@ internal interface ITransactionRealiser
 {
     Task<IEnumerable<Transaction>> RealiseAsync(
         Day? startDayIncl,
-        Day endDayIncl,
+        Day endDayExcl,
         string? accountName,
         CancellationToken ct);
 }
@@ -71,7 +71,7 @@ internal class TransactionRealiser : ITransactionRealiser
         var minDay = templates.Min(t => t.Day);
         var maxDay = templates.Max(t => t.Day);
         var futureRecurrences = new Dictionary<Day, ICollection<BumpedRecurringTransactionTemplate>>();
-        for (var day = minDay; day <= maxDay || futureRecurrences.Count > 0; ++day)
+        for (var day = minDay; day <= maxDay || futureRecurrences.Count > 0; day += 1)
         {
             foreach (var tran in ProcessDay(day, templates, futureRecurrences))
             {
@@ -103,8 +103,7 @@ internal class TransactionRealiser : ITransactionRealiser
                 }
             }
 
-            yield return new()
-            {
+            yield return new() {
                 Day = day,
                 Amount = tran.Amount,
                 Description = tran.Description,
@@ -124,8 +123,7 @@ internal class TransactionRealiser : ITransactionRealiser
         var originalMorgen = originalDateTime.AddDays(1);
         var iteration = (bumpedTriggered?.Iteration ?? 0) + 1;
 
-        var nextDay = new Day(triggered.Basis switch
-        {
+        var nextDay = new Day(triggered.Basis switch {
             RecurrenceBasis.Daily => triggered.Day.ToDateTime().AddDays(triggered.Multiplicand),
             RecurrenceBasis.Monthly when originalDateTime.Month == originalMorgen.Month =>
                 originalDateTime.AddMonths((int)triggered.Multiplicand * iteration),
@@ -139,8 +137,7 @@ internal class TransactionRealiser : ITransactionRealiser
             return;
         }
 
-        var nextRecurrence = new BumpedRecurringTransactionTemplate
-        {
+        var nextRecurrence = new BumpedRecurringTransactionTemplate {
             Day = nextDay,
             Amount = triggered.Amount,
             Description = triggered.Description,
@@ -176,13 +173,17 @@ internal class TransactionRealiser : ITransactionRealiser
             }
 
             if (!flattenedAccountIdsWithClosure.TryGetValue(tran.AccountId, out var closedAfter)
-                || (startDay.HasValue && startDay.Value > tran.Day)
                 || (closedAfter.HasValue && closedAfter.Value < tran.Day))
             {
                 continue;
             }
 
             tran.RunningTotal = runningTotal += tran.Amount;
+
+            if (startDay.HasValue && startDay.Value > tran.Day)
+            {
+                continue;
+            }
 
             yield return tran;
         }
