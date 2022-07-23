@@ -62,7 +62,7 @@ public class Layer : ScanningLayerBase
         if (_options.DatabasePath == null)
         {
             var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "morphologue", "accounts");
+                "morphologue", "accounts", "var");
             Directory.CreateDirectory(dir);
             return Path.Combine(dir, "accounts.db");
         }
