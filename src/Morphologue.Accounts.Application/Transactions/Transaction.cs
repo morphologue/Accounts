@@ -10,4 +10,5 @@ public class Transaction
     public string Description { get; set; } = string.Empty;
     public string AccountId { get; set; } = string.Empty;
     public string TemplateId { get; set; } = string.Empty;
+    public bool IsRecurring { get; set; }
 }

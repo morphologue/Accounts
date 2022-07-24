@@ -34,6 +34,6 @@ internal class GetTransactionsQueryHandler : IRequestHandler<GetTransactionsQuer
 
         var lazy = await _realiser.RealiseAsync(request.StartDayIncl, request.EndDayExcl, request.AccountName,
             ct);
-        return lazy.Reverse().ToList();
+        return lazy.ToList();
     }
 }

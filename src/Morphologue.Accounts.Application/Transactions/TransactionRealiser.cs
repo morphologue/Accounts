@@ -108,7 +108,8 @@ internal class TransactionRealiser : ITransactionRealiser
                 Amount = tran.Amount,
                 Description = tran.Description,
                 AccountId = _accountRepo.Identify(tran.Account),
-                TemplateId = _templateRepo.Identify((tran as BumpedRecurringTransactionTemplate)?.Original ?? tran)
+                TemplateId = _templateRepo.Identify((tran as BumpedRecurringTransactionTemplate)?.Original ?? tran),
+                IsRecurring = tran is RecurringTransactionTemplate
             };
         }
     }

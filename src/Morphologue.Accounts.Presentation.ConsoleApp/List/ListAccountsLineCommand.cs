@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 using Morphologue.Accounts.Application.Accounts;
 using Morphologue.Accounts.Domain.Entities;
+using Morphologue.Accounts.Domain.Primitives;
 
 namespace Morphologue.Accounts.Presentation.ConsoleApp.List;
 
@@ -14,8 +16,14 @@ internal class ListAccountsLineCommand : LineCommandBase
 {
     public ListLineCommand Parent { get; set; } = null!;
 
+    [Option("-y|--date", Description = "Show accounts open at this date YYYY-MM-DD (default today)")]
+    [RegularExpression(Regexen.Day)]
+    public string Date { get; set; } = DateTime.Now.ToString(Day.OneFormatToRuleThemAll);
+
     protected override Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken ct) =>
-        MediateAsync(new GetAccountsQuery(), TabulateAccounts, Parent.Parent, ct);
+        MediateAsync(new GetAccountsQuery {
+            AsAtDay = new Day(Date)
+        }, TabulateAccounts, Parent.Parent, ct);
 
     private static void TabulateAccounts(ICollection<Account> accounts)
     {

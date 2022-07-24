@@ -12,5 +12,6 @@ for RID in osx.12-x64 osx.12-arm64 linux-x64 linux-arm linux-arm64 win10-x64 win
   dotnet publish -c Release -o "$TARGETDIR" -r $RID --self-contained true
 done
 
+sed 's+bin/pub/++g' install.sh > "$TARGETSDIR/install.sh"
 cd "$TARGETSDIR"
 zip -r "../Release-$VERSION.zip" .

@@ -64,28 +64,32 @@ public class TransactionRealiserTests
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "Fortnightly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             },
             new Transaction {
                 Day = new Day(114),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(24004),
                 Description = "Fortnightly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             },
             new Transaction {
                 Day = new Day(114),
                 Amount = new Amount(12001),
                 RunningTotal = new Amount(36005),
                 Description = "Non-recurring",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = false
             },
             new Transaction {
                 Day = new Day(128),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(48007),
                 Description = "Fortnightly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             }
         });
     }
@@ -199,21 +203,24 @@ public class TransactionRealiserTests
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(36006),
                 Description = "Fortnightly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             },
             new Transaction {
                 Day = new Day(114),
                 Amount = new Amount(12001),
                 RunningTotal = new Amount(48007),
                 Description = "Non-recurring",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = false
             },
             new Transaction {
                 Day = new Day(128),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(60009),
                 Description = "Fortnightly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             }
         });
     }
@@ -269,21 +276,24 @@ public class TransactionRealiserTests
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "EarlyClosingChild template",
-                AccountId = "EarlyClosingChild"
+                AccountId = "EarlyClosingChild",
+                IsRecurring = true
             },
             new Transaction {
                 Day = new Day("2021-03-15"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(24004),
                 Description = "LateClosingParent template",
-                AccountId = "LateClosingParent"
+                AccountId = "LateClosingParent",
+                IsRecurring = true
             },
             new Transaction {
                 Day = new Day("2021-04-15"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(36006),
                 Description = "LateClosingParent template",
-                AccountId = "LateClosingParent"
+                AccountId = "LateClosingParent",
+                IsRecurring = true
             }
         });
     }
@@ -326,21 +336,24 @@ public class TransactionRealiserTests
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "Monthly",
-                AccountId = "Account"
+                AccountId = "Account",
+                IsRecurring = true
             },
             new Transaction {
                 Day = new Day("2021-04-30"),
                 Amount = new Amount(12001),
                 RunningTotal = new Amount(24003),
                 Description = "Non-recurring",
-                AccountId = "Account"
+                AccountId = "Account",
+                IsRecurring = false
             },
             new Transaction {
                 Day = new Day("2021-05-31"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(36005),
                 Description = "Monthly",
-                AccountId = "Account"
+                AccountId = "Account",
+                IsRecurring = true
             }
         });
     }
@@ -371,14 +384,16 @@ public class TransactionRealiserTests
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "Fortnightly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true,
             },
             new Transaction {
                 Day = new Day(114),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(24004),
                 Description = "Fortnightly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             }
         });
     }
@@ -410,21 +425,24 @@ public class TransactionRealiserTests
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "Monthly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             },
             new Transaction {
                 Day = new Day("2021-02-28"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(24004),
                 Description = "Monthly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             },
             new Transaction {
                 Day = new Day("2021-03-28"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(36006),
                 Description = "Monthly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             }
         });
     }
@@ -456,21 +474,24 @@ public class TransactionRealiserTests
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(12002),
                 Description = "Monthly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             },
             new Transaction {
                 Day = new Day("2021-03-31"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(24004),
                 Description = "Monthly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             },
             new Transaction {
                 Day = new Day("2021-04-30"),
                 Amount = new Amount(12002),
                 RunningTotal = new Amount(36006),
                 Description = "Monthly",
-                AccountId = "Root"
+                AccountId = "Root",
+                IsRecurring = true
             }
         });
     }

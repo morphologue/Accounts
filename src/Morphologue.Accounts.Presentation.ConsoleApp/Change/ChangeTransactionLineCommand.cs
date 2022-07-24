@@ -27,7 +27,7 @@ internal class ChangeTransactionLineCommand : LineCommandBase
 
     [Option("--amount", Description = "Amount")]
     [RegularExpression(Regexen.Amount)]
-    public string? Amount { get; set; } = string.Empty;
+    public string? Amount { get; set; }
 
     [Option("-d|--desc|--description", Description = "Description")]
     public string? Description { get; set; }
