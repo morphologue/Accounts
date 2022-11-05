@@ -2,11 +2,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 
-namespace Morphologue.Accounts.Presentation.ConsoleApp.Unsuppress;
+namespace Morphologue.Accounts.Presentation.ConsoleApp.Show;
 
-[Command("unsuppress")]
-[Subcommand(typeof(UnsuppressTransactionLineCommand))]
-internal class UnsuppressLineCommand : LineCommandBase
+[Command("show")]
+[Subcommand(typeof(ShowTransactionLineCommand))]
+internal class ShowLineCommand : LineCommandBase
 {
     public RootLineCommand Parent { get; set; } = null!;
 

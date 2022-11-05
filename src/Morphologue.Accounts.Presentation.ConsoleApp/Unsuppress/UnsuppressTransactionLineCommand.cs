@@ -22,8 +22,7 @@ internal class UnsuppressTransactionLineCommand : LineCommandBase
     public string Date { get; set; } = string.Empty;
 
     protected override async Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken ct) =>
-        await MediateAsync(new RehabilitateTransactionCommand
-        {
+        await MediateAsync(new RehabilitateTransactionCommand {
             Id = Id,
             Day = new Day(Date)
         }, Parent.Parent, ct);

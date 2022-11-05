@@ -15,8 +15,8 @@ internal class ListTransactionsLineCommand : LineCommandBase
 {
     public ListLineCommand Parent { get; set; } = null!;
 
-    [Option("--since", Description = "Since this day inclusive YYYY-MM-DD (default one month before date)")]
-    [RegularExpression(Regexen.Day)]
+    [Option("--since", Description = "Since this day inclusive YYYY-MM-DD or 'ever' (default one month before date)")]
+    [RegularExpression(Regexen.DayOrEver)]
     public string? Since { get; set; }
 
     [Option("-y|--date", Description = "Up to this date exclusive YYYY-MM-DD (default tomorrow)")]
@@ -37,7 +37,7 @@ internal class ListTransactionsLineCommand : LineCommandBase
             null => new Day(endDayExcl.ToDateTime().AddMonths(-1)),
             _ => new Day(Since)
         };
-        
+
         return MediateAsync(new GetTransactionsQuery {
             StartDayIncl = sinceDayIncl,
             EndDayExcl = endDayExcl,
@@ -52,7 +52,7 @@ internal class ListTransactionsLineCommand : LineCommandBase
             < 0 => trans.Take(-Tail.Value),
             >= 0 => trans.TakeLast(Tail.Value)
         };
-        
+
         Console.WriteLine($"ID     Date       Amount      Balance     Description{string.Empty,29} Account");
         foreach (var tran in tailedTrans)
         {

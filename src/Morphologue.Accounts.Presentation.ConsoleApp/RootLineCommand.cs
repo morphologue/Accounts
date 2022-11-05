@@ -6,6 +6,7 @@ using Morphologue.Accounts.Presentation.ConsoleApp.Change;
 using Morphologue.Accounts.Presentation.ConsoleApp.Delete;
 using Morphologue.Accounts.Presentation.ConsoleApp.List;
 using Morphologue.Accounts.Presentation.ConsoleApp.Replace;
+using Morphologue.Accounts.Presentation.ConsoleApp.Show;
 using Morphologue.Accounts.Presentation.ConsoleApp.Suppress;
 using Morphologue.Accounts.Presentation.ConsoleApp.Unsuppress;
 
@@ -19,6 +20,7 @@ namespace Morphologue.Accounts.Presentation.ConsoleApp;
     typeof(ListLineCommand),
     typeof(ReplaceLineCommand),
     typeof(SuppressLineCommand),
+    typeof(ShowLineCommand),
     typeof(UnsuppressLineCommand))]
 internal class RootLineCommand : LineCommandBase
 {

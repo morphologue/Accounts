@@ -8,7 +8,8 @@ public struct PatchBox<T>
 {
     public bool IsSpecified { get; init; }
 
-    private T _value;
+    private readonly T _value;
+
     public T Value
     {
         get => IsSpecified ? _value : throw new InvalidOperationException("Value has not been specified");

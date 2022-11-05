@@ -10,10 +10,10 @@ namespace Morphologue.Accounts.Application.Templates;
 public class UpdateTemplateCommand : IRequest, ITemplateUpdateRequest
 {
     public string Id { get; init; } = string.Empty;
-    public PatchBox<string> AccountName { get; init; } = new() { Value = string.Empty };
+    public PatchBox<string> AccountName { get; init; } = new() {Value = string.Empty};
     public PatchBox<Day> Day { get; init; }
     public PatchBox<Amount> Amount { get; init; }
-    public PatchBox<string> Description { get; init; } = new() { Value = string.Empty };
+    public PatchBox<string> Description { get; init; } = new() {Value = string.Empty};
 }
 
 internal class UpdateTemplateCommandHandler : IRequestHandler<UpdateTemplateCommand>

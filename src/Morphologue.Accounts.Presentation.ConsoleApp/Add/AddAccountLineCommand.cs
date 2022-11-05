@@ -19,8 +19,7 @@ internal class AddAccountLineCommand : LineCommandBase
     public string AccountName { get; set; } = string.Empty;
 
     protected override Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken ct)
-        => MediateAsync(new CreateAccountCommand
-        {
+        => MediateAsync(new CreateAccountCommand {
             Name = AccountName,
             Parent = ParentAccountName
         }, Parent.Parent, ct);

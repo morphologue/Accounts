@@ -9,14 +9,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Morphologue.Accounts.Infrastructure\Morphologue.Accounts.Infrastructure.csproj" />
-        <ProjectReference Include="..\Morphologue.Accounts.Migrations.Sqlite\Morphologue.Accounts.Migrations.Sqlite.csproj" />
+        <ProjectReference Include="..\Morphologue.Accounts.Infrastructure\Morphologue.Accounts.Infrastructure.csproj"/>
+        <ProjectReference Include="..\Morphologue.Accounts.Migrations.Sqlite\Morphologue.Accounts.Migrations.Sqlite.csproj"/>
     </ItemGroup>
 </Project>

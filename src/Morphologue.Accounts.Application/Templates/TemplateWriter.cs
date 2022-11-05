@@ -37,8 +37,7 @@ internal interface ITemplateUpdateRequest
 }
 
 internal interface ITemplateSpliceRequest : ITransactionDeletionRequest, ITemplateCreationRequest
-{
-}
+{ }
 
 internal class TemplateWriter<T> : ITemplateWriter<T>
     where T : TransactionTemplate, new()
@@ -77,8 +76,7 @@ internal class TemplateWriter<T> : ITemplateWriter<T>
                 : await _accountRepo.GetAsync(request.AccountName, ct))
             ?? throw new NotFoundException($"Cannot find account '{request.AccountName}'");
 
-        var creature = new T
-        {
+        var creature = new T {
             Day = request.Day,
             Amount = request.Amount,
             Description = request.Description,

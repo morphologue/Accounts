@@ -61,5 +61,4 @@ public class DayTests
 
         action.Should().Throw<FormatException>();
     }
-
 }

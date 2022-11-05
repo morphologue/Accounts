@@ -15,8 +15,8 @@ namespace Morphologue.Accounts.Application.Accounts;
 public class UpdateAccountCommand : IRequest
 {
     public string? Name { get; init; }
-    public PatchBox<string> Parent { get; init; } = new() { Value = string.Empty };
-    public PatchBox<string> NewName { get; init; } = new() { Value = string.Empty };
+    public PatchBox<string> Parent { get; init; } = new() {Value = string.Empty};
+    public PatchBox<string> NewName { get; init; } = new() {Value = string.Empty};
     public PatchBox<Day?> ClosedAfter { get; init; }
 }
 

@@ -16,8 +16,7 @@ internal class DeleteAccountLineCommand : LineCommandBase
     public string AccountName { get; set; } = string.Empty;
 
     protected override Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken ct) =>
-        MediateAsync(new DeleteAccountCommand
-        {
+        MediateAsync(new DeleteAccountCommand {
             Name = AccountName
         }, Parent.Parent, ct);
 }

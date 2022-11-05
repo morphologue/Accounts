@@ -19,5 +19,6 @@ internal class CreateRecurringTemplateCommandHandler
     : RecurringTemplateCreationCommandBase<CreateRecurringTemplateCommand>
 {
     public CreateRecurringTemplateCommandHandler(ITemplateWriter<RecurringTransactionTemplate> writer)
-        : base(writer.CreateAsync) { }
+        : base(writer.CreateAsync)
+    { }
 }

@@ -19,7 +19,8 @@ internal class RehabilitateTransactionCommandHandler : IRequestHandler<Rehabilit
     private readonly IUnitOfWork _uow;
     private readonly IRepository<RecurringTransactionTemplate> _templateRepo;
 
-    public RehabilitateTransactionCommandHandler(IUnitOfWork uow,
+    public RehabilitateTransactionCommandHandler(
+        IUnitOfWork uow,
         IRepository<RecurringTransactionTemplate> templateRepo)
     {
         _uow = uow;

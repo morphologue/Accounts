@@ -4,6 +4,5 @@
 public class BadRequestException : UserException
 {
     public BadRequestException(string message) : base(message)
-    {
-    }
+    { }
 }

@@ -11,14 +11,14 @@ public class AccountsDbContext : DbContext
 
     public AccountsDbContext(
         DbContextOptions<AccountsDbContext> contextOptions,
-        Layer.Options layerOptions
-    ) : base(contextOptions)
+        Layer.Options layerOptions) : base(contextOptions)
     {
         _layerOptions = layerOptions;
     }
 
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<TransactionTemplate> TransactionTemplates => Set<TransactionTemplate>();
+
     public DbSet<RecurringTransactionTemplate> RecurringTransactionTemplates =>
         Set<RecurringTransactionTemplate>();
 
@@ -45,7 +45,7 @@ public class AccountsDbContext : DbContext
             }
             var closedMethod = openMethod.MakeGenericMethod(interfaceType.GenericTypeArguments[0]);
             var configInstance = Activator.CreateInstance(classType, _layerOptions);
-            closedMethod.Invoke(builder, new[] { configInstance });
+            closedMethod.Invoke(builder, new[] {configInstance});
         }
     }
 }

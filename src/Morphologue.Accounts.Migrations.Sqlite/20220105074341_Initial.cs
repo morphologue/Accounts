@@ -10,8 +10,7 @@ namespace Morphologue.Accounts.Migrations.Sqlite
         {
             migrationBuilder.CreateTable(
                 name: "Accounts",
-                columns: table => new
-                {
+                columns: table => new {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     ParentId = table.Column<int>(type: "INTEGER", nullable: true),
@@ -30,8 +29,7 @@ namespace Morphologue.Accounts.Migrations.Sqlite
 
             migrationBuilder.CreateTable(
                 name: "TransactionTemplates",
-                columns: table => new
-                {
+                columns: table => new {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Day = table.Column<int>(type: "INTEGER", nullable: false),

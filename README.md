@@ -6,9 +6,11 @@ Currently this is a console app only. However the code has been written to suppo
 scenarios. Future iterations may include an HTTP API and a web/mobile front end in .NET MAUI.
 
 ## Installing the console app from pre-built binaries
+
 Download the latest ZIP under Releases and unzip it to a temporary directory.
 
 ### Linux and macOS
+
 From within the temporary directory:
 
 ```
@@ -26,13 +28,16 @@ Currently the following RIDs are supported:
 * linux-arm
 * linux-arm64
 
-The script will create a symlink called `accounts` in `~/bin`, so please ensure that that directory exists and is in your path.
+The script will create a symlink called `accounts` in `~/bin`, so please ensure that that directory exists and is in
+your path.
 
 ### Windows 10 and 11
+
 Move the directory for your architecture (either `win10-x64` or `win10-arm64`) to a
 convenient permanent location then create a shortcut to `Morphologue.Accounts.Presentation.ConsoleApp.exe` therein.
 
 ## Building and running the console app from source
+
 You must have the .NET >=6 SDK installed.
 
 Then in the `src/Morphologue.Accounts.Presentation.ConsoleApp` directory:
@@ -48,6 +53,7 @@ $ dotnet test
 ```
 
 ## Basic usage
+
 Create an account under the root account:
 
 ```
@@ -95,6 +101,7 @@ ID     Date       Amount      Balance     Description                           
 ```
 
 Change a transaction:
+
 ```
 $ accounts change transaction --recurring 84d 2
 
@@ -148,11 +155,13 @@ $ accounts add tran -a Primary -d Demo -y 2022-01-21 -r 3m '$-10.69'
 ```
 
 Some additional functionality to note:
+
 * An account may be closed using the `change transaction` command with the `--close` option. One-off transactions and
-recurring transaction instances after the closure date will not be shown. Also the account itself may be hidden
-depending on the `--date` option of the `show accounts` command.
+  recurring transaction instances after the closure date will not be shown. Also the account itself may be hidden
+  depending on the `--date` option of the `show accounts` command.
 * A child account is automatically closed when one of its ancestors is closed.
 * Running totals include the children of the account which is being listed.
 
 ## Licence
+
 [GNU GPL v3](LICENSE)

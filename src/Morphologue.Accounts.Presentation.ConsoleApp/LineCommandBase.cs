@@ -39,13 +39,11 @@ internal abstract class LineCommandBase
         CancellationToken ct)
         where TRequest : IBaseRequest
     {
-        var infraOptions = new Infrastructure.Layer.Options
-        {
+        var infraOptions = new Infrastructure.Layer.Options {
             DatabasePath = root.DatabasePath
         };
 
-        var provider = await new ILayer[]
-        {
+        var provider = await new ILayer[] {
             new Application.Layer(),
             new Infrastructure.Layer(infraOptions)
         }.BootstrapAsync(ct);

@@ -21,5 +21,6 @@ internal class SpliceRecurringTemplateCommandHandler
     : RecurringTemplateCreationCommandBase<SpliceRecurringTemplateCommand>
 {
     public SpliceRecurringTemplateCommandHandler(ITemplateWriter<RecurringTransactionTemplate> writer)
-        : base(writer.SpliceAsync) { }
+        : base(writer.SpliceAsync)
+    { }
 }

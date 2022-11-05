@@ -4,6 +4,5 @@
 public class ForbiddenException : UserException
 {
     public ForbiddenException(string message) : base(message)
-    {
-    }
+    { }
 }

@@ -25,8 +25,7 @@ internal class SuppressTransactionLineCommand : LineCommandBase
     public bool EndRecurrence { get; set; }
 
     protected override async Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken ct) =>
-        await MediateAsync(new DeleteTransactionCommand
-        {
+        await MediateAsync(new DeleteTransactionCommand {
             Id = Id,
             Day = new Day(Date),
             EndRecurrence = EndRecurrence

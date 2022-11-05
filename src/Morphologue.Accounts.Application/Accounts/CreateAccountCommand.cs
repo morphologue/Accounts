@@ -43,8 +43,7 @@ internal class CreateAccountCommandHandler : IRequestHandler<CreateAccountComman
         var parent = accounts.FirstOrDefault(request.Parent == null ? a => a.Parent == null : a => a.Name == request.Parent)
             ?? throw new NotFoundException($"Parent account '{request.Parent}' could not be found");
 
-        _accountRepo.Add(new()
-        {
+        _accountRepo.Add(new() {
             Parent = parent,
             Name = request.Name
         });

@@ -16,8 +16,7 @@ internal class DeleteTransactionLineCommand : LineCommandBase
     public string Id { get; set; } = string.Empty;
 
     protected override Task<int> OnExecuteAsync(CommandLineApplication app, CancellationToken ct) =>
-        MediateAsync(new DeleteTemplateCommand
-        {
+        MediateAsync(new DeleteTemplateCommand {
             Id = Id
         }, Parent.Parent, ct);
 }
