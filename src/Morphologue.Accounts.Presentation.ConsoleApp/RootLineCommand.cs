@@ -13,7 +13,7 @@ using Morphologue.Accounts.Presentation.ConsoleApp.Unsuppress;
 namespace Morphologue.Accounts.Presentation.ConsoleApp;
 
 [Command("accounts")]
-[VersionOption("Accounts 1.0.0")]
+[VersionOption("Accounts 1.1.0")]
 [Subcommand(typeof(AddLineCommand),
     typeof(ChangeLineCommand),
     typeof(DeleteLineCommand),
