@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-VERSION="1.1.0"
+VERSION="1.1.1"
 PUBDIR="bin/pub"
 TARGETSDIR="$PUBDIR/targets"
 

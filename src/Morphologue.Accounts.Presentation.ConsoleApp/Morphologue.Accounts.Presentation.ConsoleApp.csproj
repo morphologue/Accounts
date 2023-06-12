@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
-        <Version>1.1.0.0</Version>
+        <TargetFramework>net7.0</TargetFramework>
+        <Version>1.1.1.0</Version>
         <RuntimeIdentifiers>osx.12-x64;osx.12-arm64;linux-x64;linux-arm;linux-arm64;win10-x64;win10-arm64</RuntimeIdentifiers>
         <PublishReadyToRun>true</PublishReadyToRun>
         <Nullable>enable</Nullable>
@@ -10,14 +10,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1"/>
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Morphologue.Accounts.Infrastructure\Morphologue.Accounts.Infrastructure.csproj"/>
-        <ProjectReference Include="..\Morphologue.Accounts.Migrations.Sqlite\Morphologue.Accounts.Migrations.Sqlite.csproj"/>
+        <ProjectReference Include="..\Morphologue.Accounts.Infrastructure\Morphologue.Accounts.Infrastructure.csproj" />
+        <ProjectReference Include="..\Morphologue.Accounts.Migrations.Sqlite\Morphologue.Accounts.Migrations.Sqlite.csproj" />
     </ItemGroup>
 </Project>
