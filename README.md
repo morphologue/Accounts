@@ -38,7 +38,7 @@ convenient permanent location then create a shortcut to `Morphologue.Accounts.Pr
 
 ## Building and running the console app from source
 
-You must have the .NET >=6 SDK installed.
+You must have the .NET >=7 SDK installed.
 
 Then in the `src/Morphologue.Accounts.Presentation.ConsoleApp` directory:
 
